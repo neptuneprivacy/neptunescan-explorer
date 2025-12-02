@@ -1,70 +1,59 @@
-import type { CSSProperties } from 'react'
-import React from 'react'
-import { type VariantProps, cva } from 'class-variance-authority'
-import classNames from '@/utils/classnames'
+import React from "react";
+import { Button, ButtonProps } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-enum ActionButtonState {
-  Destructive = 'destructive',
-  Active = 'active',
-  Disabled = 'disabled',
-  Default = '',
+export enum ActionButtonState {
+  Destructive = "destructive",
+  Active = "active",
+  Disabled = "disabled",
+  Default = "default",
 }
-
-const actionButtonVariants = cva(
-  'action-btn',
-  {
-    variants: {
-      size: {
-        xs: 'action-btn-xs',
-        m: 'action-btn-m',
-        l: 'action-btn-l',
-        xl: 'action-btn-xl',
-      },
-    },
-    defaultVariants: {
-      size: 'm',
-    },
-  },
-)
 
 export type ActionButtonProps = {
-  size?: 'xs' | 'm' | 'l' | 'xl'
-  state?: ActionButtonState
-  styleCss?: CSSProperties
-} & React.ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof actionButtonVariants>
-
-function getActionButtonState(state: ActionButtonState) {
-  switch (state) {
-    case ActionButtonState.Destructive:
-      return 'action-btn-destructive'
-    case ActionButtonState.Active:
-      return 'action-btn-active'
-    case ActionButtonState.Disabled:
-      return 'action-btn-disabled'
-    default:
-      return ''
-  }
-}
+  size?: "xs" | "m" | "l" | "xl";
+  state?: ActionButtonState;
+  styleCss?: React.CSSProperties;
+} & Omit<ButtonProps, "size" | "variant">;
 
 const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
-  ({ className, size, state = ActionButtonState.Default, styleCss, children, ...props }, ref) => {
+  (
+    {
+      className,
+      size = "m",
+      state = ActionButtonState.Default,
+      styleCss,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    let variant: ButtonProps["variant"] = "secondary";
+    if (state === ActionButtonState.Destructive) variant = "destructive";
+    if (state === ActionButtonState.Active) variant = "default";
+    if (state === ActionButtonState.Disabled) variant = "ghost"; // or just disabled prop
+
+    let btnSize: ButtonProps["size"] = "default";
+    if (size === "xs") btnSize = "sm";
+    if (size === "m") btnSize = "default";
+    if (size === "l") btnSize = "lg";
+    if (size === "xl") btnSize = "lg";
+
     return (
-      <button
-        type='button'
-        className={classNames(
-          actionButtonVariants({ className, size }),
-          getActionButtonState(state),
-        )}
+      <Button
+        variant={variant}
+        size={btnSize}
+        className={cn(className)}
         ref={ref}
         style={styleCss}
+        disabled={state === ActionButtonState.Disabled || props.disabled}
         {...props}
       >
         {children}
-      </button>
-    )
-  },
-)
-ActionButton.displayName = 'ActionButton'
+      </Button>
+    );
+  }
+);
+ActionButton.displayName = "ActionButton";
 
-export default ActionButton
-export { ActionButton, ActionButtonState, actionButtonVariants }
+export default ActionButton;
+export { ActionButton };

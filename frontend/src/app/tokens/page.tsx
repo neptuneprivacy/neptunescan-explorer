@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function Tokens() {
       useEffect(() => {
-        document.title = `Tokens - Neptune Explorer`;
+        document.title = `Tokens - Neptune Privacy Explorer`;
       }, [])
     return (<> 
         <Empty/>

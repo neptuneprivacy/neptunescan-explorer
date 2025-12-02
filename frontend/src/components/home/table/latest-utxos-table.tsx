@@ -1,71 +1,86 @@
-import NavTextLink from "@/components/base/nav-text-link"
-import { useLatestUtxoDatas } from "@/store/utxo/hooks"
-import { numberConverTo } from "@/utils/math-format"
-import { Card, Divider, Flex, NumberFormatter, Text, UnstyledButton } from "@mantine/core"
-import { IconNotes } from "@tabler/icons-react"
-import { useRouter } from "next/navigation"
+import NavTextLink from "@/components/base/nav-text-link";
+import { useLatestUtxoDatas } from "@/store/utxo/hooks";
+import { numberConverTo } from "@/utils/math-format";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+const FormattedNumber = ({
+  value,
+  style,
+}: {
+  value: number | string | undefined;
+  style?: React.CSSProperties;
+}) => {
+  if (value === undefined || value === null) return null;
+  return <span style={style}>{Number(value).toLocaleString()}</span>;
+};
 
 export default function LatestUtxosTable() {
-    const latestUtxos = useLatestUtxoDatas()
-    const router = useRouter()
-    return (
-        <Flex direction={"column"} gap={"sm"}>
-            <Card withBorder radius={8} p={"6px"} visibleFrom="sm">
-                <Flex direction={"column"} justify={"center"} >
-                    {
-                        latestUtxos && latestUtxos.map((item, index) => {
-                            return (<Flex key={index} direction={"column"}>
-                                <Flex direction={"row"} align={"center"} h={82} gap={24} p={24}>
-                                    <IconNotes size={18} />
-                                    <NumberFormatter style={{ fontSize: "14px" }} value={item.id} thousandSeparator/>
-                                    <Text style={{ fontSize: "14px" }}>
-                                        {item.digest}
-                                    </Text>
-                                </Flex>
-                                {index != latestUtxos.length - 1 && <Divider />}
-                            </Flex>
-                            )
-                        })
-                    }
-                </Flex>
-            </Card>
-            <Flex direction={"column"} gap={"sm"} hiddenFrom="sm">
-                {
-                    latestUtxos && latestUtxos.map((item, index) => {
-                        return (<Card key={index} withBorder radius={8}>
-                            <Flex direction={"column"} gap={8} >
-                                <Flex direction={"row"} justify={"space-between"} align={"center"}>
-                                    <Flex direction={"row"} align={"center"} gap={8}>
-                                        <IconNotes size={24} />
-                                        <Text style={{ fontSize: "18px", color: "#332526" }}>
-                                            <NumberFormatter value={item.id} thousandSeparator />
-                                        </Text>
-                                    </Flex>
-                                </Flex>
-                                <div style={{
-                                    wordWrap: "break-word",
-                                    overflowWrap: "break-word",
-                                }}>
-                                    <Text style={{ fontSize: "16px", color: "#332526" }}>
-                                        {item.digest}
-                                    </Text>
-                                </div>
-                            </Flex>
-                        </Card>)
-                    })
-                }
-            </Flex>
-            {
-                latestUtxos && latestUtxos.length === 5 &&
-                <Flex justify={"center"}>
-                    <UnstyledButton component="a"
-                        onClick={() => {
-                            router.push("/utxos")
-                        }}>
-                        View all UTXOs
-                    </UnstyledButton>
-                </Flex>
-            }
-        </Flex>
-    )
+  const latestUtxos = useLatestUtxoDatas();
+  const router = useRouter();
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="hidden sm:block">
+        <Card className="p-1.5">
+          <CardContent className="flex flex-col justify-center p-0">
+            {latestUtxos &&
+              latestUtxos.map((item, index) => {
+                return (
+                  <div key={index} className="flex flex-col">
+                    <div className="flex flex-row items-center h-[82px] gap-6 px-6">
+                      <FileText size={18} />
+                      <FormattedNumber
+                        style={{ fontSize: "14px" }}
+                        value={item.id}
+                      />
+                      <span className="text-sm">{item.digest}</span>
+                    </div>
+                    {index != latestUtxos.length - 1 && <Separator />}
+                  </div>
+                );
+              })}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="flex flex-col gap-2 sm:hidden">
+        {latestUtxos &&
+          latestUtxos.map((item, index) => {
+            return (
+              <Card key={index}>
+                <CardContent className="flex flex-col gap-2 p-4">
+                  <div className="flex flex-row justify-between items-center">
+                    <div className="flex flex-row items-center gap-2">
+                      <FileText size={24} />
+                      <span className="text-lg text-[#332526]">
+                        <FormattedNumber value={item.id} />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="break-all">
+                    <span className="text-base text-[#332526]">
+                      {item.digest}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+      </div>
+      {latestUtxos && latestUtxos.length === 5 && (
+        <div className="flex justify-center">
+          <Button
+            variant="link"
+            onClick={() => {
+              router.push("/utxos");
+            }}
+          >
+            View all UTXOs
+          </Button>
+        </div>
+      )}
+    </div>
+  );
 }

@@ -1,53 +1,58 @@
-import { Burger, Drawer, Flex, Group, Image } from '@mantine/core';
-import NetworkContent from '../home/network-content';
-import { useDisclosure } from '@mantine/hooks';
-import { useRouter } from 'next/navigation';
-import MobileNavbar from '../navbar/mobileNavbar';
-import HyperliquidContent from '../home/hyperliquid-content';
+import NetworkContent from "../home/network-content";
+import { useRouter } from "next/navigation";
+import MobileNavbar from "../navbar/mobileNavbar";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 export function Header() {
-    const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-    const router = useRouter();
-    return (
-        <Group w={"100%"}>
-            <Group justify="space-between" w={"100%"} px={30} wrap="nowrap" style={{ margin: "10px 0" }}>
-                <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
-                <Flex direction={"row"} gap={16}>
-                    <HyperliquidContent />
-                    <NetworkContent />
-                </Flex>
-            </Group>
-            <Drawer
-                styles={{
-                    header: {
-                        backgroundColor: "#332526"
-                    },
-                    content: {
-                        backgroundColor: "#332526"
-                    },
-                    close: {
-                        color: "#fff",
-                        backgroundColor: "#332526"
-                    }
-                }}
-                opened={drawerOpened}
-                onClose={closeDrawer}
-                size="100%"
-                title={<Image
-                    style={{ cursor: "pointer" }}
-                    src={"/icon-neptune.png"}
-                    h={24}
-                    onClick={() => {
-                        router.push("/")
-                        closeDrawer()
-                    }
-                    }
-                />}
-                hiddenFrom="sm"
-            >
-                <MobileNavbar closeDrawer={closeDrawer} />
-            </Drawer>
-        </Group>
-    );
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
 
+  return (
+    <div className="w-full">
+      <div className="flex justify-between w-full px-[30px] flex-nowrap my-[10px]">
+        <div className="sm:hidden">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="left"
+              className="p-0 w-[280px]"
+            >
+              <SheetHeader className="p-6 flex justify-center items-center border-b">
+                <SheetTitle>
+                  <img
+                    style={{ cursor: "pointer" }}
+                    src={"/logo.png"}
+                    height={60}
+                    width={60}
+                    alt="Logo"
+                    onClick={() => {
+                      router.push("/");
+                      setOpen(false);
+                    }}
+                  />
+                </SheetTitle>
+              </SheetHeader>
+              <MobileNavbar closeDrawer={() => setOpen(false)} />
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div className="flex flex-row gap-4">
+          <NetworkContent />
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -1,39 +1,43 @@
-import { Card, Flex, Button, Image, Text } from "@mantine/core"
-import { IconWallet, IconArrowRight } from "@tabler/icons-react"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Wallet, ArrowRight } from "lucide-react";
 
 export default function BaseAdCard() {
-    return (<Card radius={15} style={{ backgroundColor: "#fafbff" }}>
-        <Flex direction={"row"} justify={"space-between"} align={"center"} >
-            <Image
-                w={"100%"}
-                h={100}
-                style={{ userSelect: "none" }}
-                radius={"md"}
-                src="/logo.png"
-            />
-            <Flex direction={"column"} gap={10}> 
-                <Text style={{ textAlign: "right", color: "#0384d8", userSelect: "none" }} fw={600} fz={16}>Homepage Header AD</Text> 
-                <Text style={{ textAlign: "right", color: "#0384d8", userSelect: "none" }} fz={10}>🔥 Prime Visibility: Your Brand on Our Header!</Text>
-                <Flex direction={"row"} align={"center"} justify={"end"} gap={8}> 
-                    <Button
-                        variant="default"
-                        size="xs"
-                        style={{
-                            userSelect: "none",
-                            backgroundColor: "transparent",
-                            color: "#0384d8",
-                            borderColor: "#0384d8"
-                        }}
-                        href="https://github.com/VxBlocks/vxb_neptune_wallet/releases"
-                        target="_blank"
-                        component="a"
-                        leftSection={<IconWallet size={14} />}
-                        rightSection={<IconArrowRight size={14} />}
-                    >
-                        Contact Us
-                    </Button>
-                </Flex>
-            </Flex>
-        </Flex>
-    </Card>)
+  return (
+    <Card className="rounded-[15px] bg-[#fafbff] border-none">
+      <CardContent className="flex flex-row justify-between items-center p-4">
+        <img
+          className="w-auto h-[100px] rounded-md select-none object-contain"
+          src="/logo.png"
+          alt="Logo"
+        />
+        <div className="flex flex-col gap-2.5 items-end">
+          <span className="text-right text-[#0384d8] select-none font-semibold text-base">
+            Homepage Header AD
+          </span>
+          <span className="text-right text-[#0384d8] select-none text-[10px]">
+            🔥 Prime Visibility: Your Brand on Our Header!
+          </span>
+          <div className="flex flex-row items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="select-none bg-transparent text-[#0384d8] border-[#0384d8] hover:bg-[#0384d8]/10 hover:text-[#0384d8]"
+              asChild
+            >
+              <a
+                href="https://github.com/VxBlocks/vxb_neptune_wallet/releases"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Wallet className="mr-2 h-3.5 w-3.5" />
+                Contact Us
+                <ArrowRight className="ml-2 h-3.5 w-3.5" />
+              </a>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

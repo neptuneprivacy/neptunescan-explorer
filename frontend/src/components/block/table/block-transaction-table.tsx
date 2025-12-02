@@ -1,195 +1,161 @@
 import NavTextLink from "@/components/base/nav-text-link";
-import TitleText from "@/components/base/title-text";
 import { useBlockTxDatas, useLoadingBlockTxs } from "@/store/txs/hooks";
 import { stringConvertToTimestamp } from "@/utils/data-format";
 import { ellipsis } from "@/utils/ellipsis-format";
 import { tokenFormat } from "@/utils/math-format";
 import { timestampToDate } from "@/utils/tools";
-import { Table, NumberFormatter, Center, Flex, Box, LoadingOverlay, Card, Text } from "@mantine/core";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { Badge } from "@/components/ui/badge";
+
+const FormattedNumber = ({ value }: { value: number | string | undefined }) => {
+  if (value === undefined || value === null) return null;
+  return <>{Number(value).toLocaleString()}</>;
+};
 
 export default function BlockTransactionTable() {
-    const loading = useLoadingBlockTxs()
-    const txsDatas = useBlockTxDatas();
-    const rows = txsDatas && txsDatas.map((element) => (
-        <Table.Tr key={element.id}>
-            <Table.Td>
-                {
-                    element.height ? element.height : "--"
-                }
-            </Table.Td>
-            <Table.Td style={{
-                wordWrap: "break-word",
-                overflowWrap: "break-word",
-            }}>
-                <NavTextLink href={`/tx?id=${element.id}`}>
-                    {ellipsis(element?.id)}
-                </NavTextLink>
-            </Table.Td>
-            <Table.Td>
-                <NumberFormatter value={tokenFormat(element.fee)} thousandSeparator />
-            </Table.Td>
-            <Table.Td>
-                <Center>
-                    <NumberFormatter value={element?.num_inputs} thousandSeparator />
-                </Center>
-            </Table.Td>
-            <Table.Td>
-                <Center>
-                    <NumberFormatter value={element?.num_outputs} thousandSeparator />
-                </Center>
-            </Table.Td>
-            <Table.Td>
-                {element?.proof_type}
-            </Table.Td>
-            <Table.Td>
-                {element?.time && element?.time === "0001-01-01T08:05:43+08:05" ? "--" : timestampToDate(stringConvertToTimestamp(element?.time ?? ""), "YYYY-MM-DD HH:mm:ss")}
-            </Table.Td>
-        </Table.Tr>
-    ));
-    const ths = (
-        <Table.Tr>
-            <Table.Th>Block</Table.Th>
-            <Table.Th>ID</Table.Th>
-            <Table.Th>Fee</Table.Th>
-            <Table.Th>
-                <Center>
-                    Inputs
-                </Center>
-            </Table.Th>
-            <Table.Th>
-                <Center>
-                    Outputs
-                </Center>
-            </Table.Th>
-            <Table.Th>
-                Proof Type
-            </Table.Th>
-            <Table.Th>Time</Table.Th>
-        </Table.Tr>
-    );
-    return (<>
-        {
-            !loading && !txsDatas ? null :
-                <Flex direction={"column"}>
+  const loading = useLoadingBlockTxs();
+  const txsDatas = useBlockTxDatas();
 
-                    <Flex direction={"row"} justify={"space-between"} align={"center"}>
-                        <TitleText>
-                            Transactions
-                        </TitleText>
-                    </Flex>
-                    <Box pos="relative">
-                        <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
-                        <Table striped withRowBorders={false} horizontalSpacing="lg" verticalSpacing="lg" visibleFrom="sm">
-                            <Table.Thead>{ths}</Table.Thead>
-                            <Table.Tbody>{rows}</Table.Tbody>
-                        </Table>
-                        <Flex direction={"column"} gap={"sm"} hiddenFrom="sm">
-                            {
-                                txsDatas && txsDatas.map((item, index) => {
-                                    return (<Card key={index} withBorder radius={8} p={"10px"}>
-                                        <Flex direction={"column"} gap={"md"} style={{ marginTop: "16px" }}>
-                                            <Flex direction={"row"} gap={"md"} align={"center"}>
-                                                <Text w={"120px"}>
-                                                    Block:
-                                                </Text>
-                                                <div style={{
-                                                    width: "100%",
-                                                    minWidth: "120px"
-                                                }}>
-                                                    {
-                                                        item.height ?? "--"
-                                                    }
-                                                </div>
-                                            </Flex>
-                                            <Flex direction={"row"} gap={"md"} align={"top"}
-                                                style={{
-                                                    wordWrap: "break-word",
-                                                    overflowWrap: "break-word",
-                                                }}>
-                                                <Text w={"120px"}>
-                                                    ID:
-                                                </Text>
-                                                <div style={{
-                                                    width: "100%",
-                                                    minWidth: "120px",
-                                                    wordWrap: "break-word",
-                                                    overflowWrap: "break-word",
-                                                }}>
-                                                    <NavTextLink href={`/tx?id=${item.id}`}>
-                                                        <Text style={{ fontSize: "14px", color: "#8E8E93" }}>
-                                                            {item?.id}
-                                                        </Text>
-                                                    </NavTextLink>
+  if (!loading && !txsDatas) return null;
 
-                                                </div>
-                                            </Flex>
-                                            <Flex direction={"row"} gap={"md"} align={"top"}>
-                                                <Text w={"120px"}>
-                                                    Fee:
-                                                </Text>
-                                                <div style={{
-                                                    width: "100%",
-                                                    minWidth: "120px"
-                                                }}>
-                                                    <NumberFormatter value={tokenFormat(item.fee)} thousandSeparator />
-                                                </div>
-
-                                            </Flex>
-                                            <Flex direction={"row"} gap={"md"} align={"top"}>
-                                                <Text w={"120px"}>
-                                                    Inputs:
-                                                </Text>
-                                                <div style={{
-                                                    width: "100%",
-                                                    minWidth: "120px"
-                                                }}>
-                                                    <NumberFormatter value={item?.num_inputs} thousandSeparator />
-                                                </div>
-
-                                            </Flex>
-                                            <Flex direction={"row"} gap={"md"} align={"top"}>
-                                                <Text w={"120px"}>
-                                                    Outputs:
-                                                </Text>
-                                                <div style={{
-                                                    width: "100%",
-                                                    minWidth: "120px"
-                                                }}>
-                                                    <NumberFormatter value={item?.num_outputs} thousandSeparator />
-                                                </div>
-                                            </Flex>
-                                            <Flex direction={"row"} gap={"md"} align={"top"}>
-                                                <Text w={"120px"}>
-                                                    Proof Type:
-                                                </Text>
-                                                <div style={{
-                                                    width: "100%",
-                                                    minWidth: "120px"
-                                                }}>
-                                                    {item?.proof_type}
-                                                </div>
-                                            </Flex>
-                                            <Flex direction={"row"} gap={"md"} align={"top"}>
-                                                <Text w={"120px"}>
-                                                    Time:
-                                                </Text>
-                                                <div style={{
-                                                    width: "100%",
-                                                    minWidth: "120px"
-                                                }}>
-                                                    {item?.time && item?.time === "0001-01-01T08:05:43+08:05" ? "--" : timestampToDate(stringConvertToTimestamp(item?.time ?? ""), "YYYY-MM-DD HH:mm:ss")}
-                                                </div>
-
-                                            </Flex>
-                                        </Flex>
-                                    </Card>)
-                                })
-                            }
-                        </Flex>
-                    </Box>
-                </Flex>
-        }
-    </>
-
-    )
+  return (
+    <Card className="shadow-sm border-muted">
+      <CardHeader className="bg-muted/30 py-4 border-b">
+        <div className="flex flex-row justify-between items-center">
+          <CardTitle className="text-xl font-bold flex items-center gap-2">
+            Transactions
+            {txsDatas && <Badge variant="secondary">{txsDatas.length}</Badge>}
+          </CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0 relative min-h-[200px]">
+        <LoadingOverlay visible={loading} />
+        <div className="hidden sm:block">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/10">
+                <TableHead className="pl-6">Block</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>Fee</TableHead>
+                <TableHead className="text-center">Inputs</TableHead>
+                <TableHead className="text-center">Outputs</TableHead>
+                <TableHead>Proof Type</TableHead>
+                <TableHead className="pr-6 text-right">Time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {txsDatas &&
+                txsDatas.map((element) => (
+                  <TableRow key={element.id}>
+                    <TableCell className="pl-6 font-medium">
+                      {element.height ? element.height : "--"}
+                    </TableCell>
+                    <TableCell className="break-all max-w-[200px]">
+                      <NavTextLink
+                        href={`/tx?id=${element.id}`}
+                        className="text-[rgb(59,64,167)] hover:underline"
+                      >
+                        {ellipsis(element?.id)}
+                      </NavTextLink>
+                    </TableCell>
+                    <TableCell>
+                      <FormattedNumber value={tokenFormat(element.fee)} />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <FormattedNumber value={element?.num_inputs} />
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <FormattedNumber value={element?.num_outputs} />
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-normal">
+                        {element?.proof_type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="pr-6 text-right text-muted-foreground">
+                      {element?.time &&
+                      element?.time === "0001-01-01T08:05:43+08:05"
+                        ? "--"
+                        : timestampToDate(
+                            stringConvertToTimestamp(element?.time ?? ""),
+                            "YYYY-MM-DD HH:mm:ss"
+                          )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex flex-col gap-4 sm:hidden p-4">
+          {txsDatas &&
+            txsDatas.map((item, index) => {
+              return (
+                <Card key={index} className="border shadow-sm">
+                  <CardContent className="flex flex-col gap-3 p-4">
+                    <div className="flex flex-row justify-between items-center">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Block
+                      </span>
+                      <span className="font-medium">{item.height ?? "--"}</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        Transaction ID
+                      </span>
+                      <NavTextLink
+                        href={`/tx?id=${item.id}`}
+                        className="text-sm text-[rgb(59,64,167)] break-all"
+                      >
+                        {item?.id}
+                      </NavTextLink>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 pt-2">
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">
+                          Fee
+                        </span>
+                        <span>
+                          <FormattedNumber value={tokenFormat(item.fee)} />
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">
+                          Proof
+                        </span>
+                        <span>{item?.proof_type}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">
+                          Inputs
+                        </span>
+                        <span>
+                          <FormattedNumber value={item?.num_inputs} />
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground">
+                          Outputs
+                        </span>
+                        <span>
+                          <FormattedNumber value={item?.num_outputs} />
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

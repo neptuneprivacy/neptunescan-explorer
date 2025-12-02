@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { OverviewState } from "../types";
 import { queryOverviewData } from "@/utils/api/apis";
 import { Overview } from "@/utils/api/types";
-import { bigNumberMinusToString, bigNumberPlus } from "@/utils/common";
-import { munberToTokenFormat } from "@/utils/math-format";
 
 const initialState: OverviewState = {
     loadingOverview: false,
@@ -42,13 +40,8 @@ export const requestOverviewInfoData = createAsyncThunk<
     async () => {
         const res = await queryOverviewData();
         const data = res.data.overview;
-        let base = munberToTokenFormat(831600)
-        let newTotalReward = bigNumberMinusToString(data.total_reward, base);  
         return {
-            data: {
-                ...data,
-                total_reward: newTotalReward,
-            }
+            data
         }
     }
 )
@@ -61,13 +54,8 @@ export const updateOverviewInfoData = createAsyncThunk<
     async () => {
         const res = await queryOverviewData();
         const data = res.data.overview;
-        let base = munberToTokenFormat(831600)
-        let newTotalReward = bigNumberMinusToString(data.total_reward, base);
         return {
-            data: {
-                ...data,
-                total_reward: newTotalReward,
-            }
+            data
         }
     }
 )

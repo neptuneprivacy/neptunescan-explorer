@@ -1,29 +1,36 @@
-'use client'
-import CustomPieChart from "@/components/base/charts/customPieChart"
-import GuesserChart from "@/components/stats/charts/guesser-chart"
-import RewardChart from "@/components/stats/charts/reward-chart"
-import TargetChart from "@/components/stats/charts/target-chart"
-import { useAppDispatch } from "@/store/hooks"
-import { requestOverviewInfoData } from "@/store/overview/overview-slice"
-import { requestRewardChartData, requestTargetChartData } from "@/store/stats/stats-slice"
-import { Container, Flex } from "@mantine/core"
-import { useEffect } from "react"
-const Stats = () => {
-    const dispatch = useAppDispatch()
-    useEffect(() => {
-        document.title = `Charts & Stats - Neptune Explorer`;
-    }, [])
-    useEffect(() => {
-        dispatch(requestOverviewInfoData()) 
-    }, [dispatch])
-    return (<Container fluid p={"lg"}>
-        <Flex direction={"column"} gap={16}>
-            <CustomPieChart />
-            <TargetChart />
-            <RewardChart />
-            {/* <GuesserChart /> */}
-        </Flex>
-    </Container>)
-}
+"use client";
 
-export default Stats
+import DifficultyChart from "@/components/stats/charts/difficulty-chart-shadcn";
+import RewardChart from "@/components/stats/charts/reward-chart-shadcn";
+import StatsOverview from "@/components/stats/stats-overview";
+import { useAppDispatch } from "@/store/hooks";
+import { requestOverviewInfoData } from "@/store/overview/overview-slice";
+import { useEffect } from "react";
+
+const Stats = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    document.title = `Charts & Stats - Neptune Privacy Explorer`;
+  }, []);
+
+  useEffect(() => {
+    dispatch(requestOverviewInfoData());
+  }, [dispatch]);
+
+  return (
+    <div className="w-full p-5 space-y-8">
+      <StatsOverview />
+
+      <div className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight">Charts & Stats</h2>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <DifficultyChart />
+          <RewardChart />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Stats;

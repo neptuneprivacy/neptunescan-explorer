@@ -1,21 +1,9 @@
-import { Flex, Text } from "@mantine/core";
-
 export default function NetworkContent() {
-    return (<Flex
-        w={"100%"}
-        direction={"row"}
-        justify={"end"}>
-        <Flex
-            style={{
-                border: "1px solid #009291",
-                borderRadius: "8px",
-                padding: "2px 8px"
-            }}
-            align={"center"}>
-            <Text c={"#009291"} style={{ fontSize: "10px" }}>
-                Network: Main
-            </Text>
-        </Flex>
-
-    </Flex>)
+  return (
+    <div className="w-full flex flex-row justify-end">
+      <div className="flex items-center border border-[rgb(59,64,167)] rounded-lg px-2 py-0.5">
+        <span className="text-[rgb(59,64,167)] text-[10px]">Network: Main</span>
+      </div>
+    </div>
+  );
 }

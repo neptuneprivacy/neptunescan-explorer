@@ -1,38 +1,26 @@
-'use client'
+"use client";
 import { Header } from "@/components/header";
 import ExploreHeader from "@/components/header/explore-header";
 import Navbar from "@/components/navbar";
-import { AppShell } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
 import React, { Suspense } from "react";
 import { PropsWithChildren } from "react";
 
 function AppContent({ children }: PropsWithChildren) {
-    const isMobile = useMediaQuery('(max-width: 768px)');
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <AppShell
-                withBorder={false}
-                header={{ height: isMobile ? 60 : 0 }}
-                navbar={{
-                    width: 228,
-                    breakpoint: 'sm', collapsed: { mobile: false }
-                }}>
-                <AppShell.Header hiddenFrom="sm">
-                    <Header />
-
-                </AppShell.Header>
-                <AppShell.Navbar visibleFrom="sm">
-                    <Navbar />
-                </AppShell.Navbar>
-                <AppShell.Main>
-                    <ExploreHeader>
-                        {children}
-                    </ExploreHeader>
-                </AppShell.Main>
-            </AppShell>
-        </Suspense>
-    )
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <div className="flex min-h-screen w-full">
+        <Navbar />
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="sm:hidden h-[60px] border-b sticky top-0 z-50 bg-background">
+            <Header />
+          </div>
+          <main className="flex-1">
+            <ExploreHeader>{children}</ExploreHeader>
+          </main>
+        </div>
+      </div>
+    </Suspense>
+  );
 }
 
-export default React.memo(AppContent)
+export default React.memo(AppContent);

@@ -1,11 +1,33 @@
 import Link from "next/link";
-import styles from "./link.module.css";
 import { CSSProperties } from "react";
+import { cn } from "@/lib/utils";
 
-export default function NavTextLink({ children, href, disable, style }: { children: React.ReactNode, href: string, disable?: boolean, style?: CSSProperties | undefined }) {
-    return (
-        <Link className={disable ? styles.unlink : styles.link} style={{ ...style }} href={href}>
-            {children}
-        </Link>
-    );
+export default function NavTextLink({
+  children,
+  href,
+  disable,
+  style,
+  className,
+}: {
+  children: React.ReactNode;
+  href: string;
+  disable?: boolean;
+  style?: CSSProperties | undefined;
+  className?: string;
+}) {
+  return (
+    <Link
+      className={cn(
+        "inline-block",
+        disable
+          ? "text-[#8E8E93] cursor-not-allowed"
+          : "text-[rgb(59,64,167)] hover:underline",
+        className
+      )}
+      style={{ ...style }}
+      href={href}
+    >
+      {children}
+    </Link>
+  );
 }

@@ -1,9 +1,5 @@
-import { Flex, Text } from "@mantine/core";
+import React from "react";
 
 export default function TitleText({ children }: { children: string }) {
-    return (
-        <Text size="xl">
-            {children}
-        </Text>
-    );
+  return <h1 className="text-xl font-semibold">{children}</h1>;
 }
