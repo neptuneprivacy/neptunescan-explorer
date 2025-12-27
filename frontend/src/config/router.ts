@@ -10,8 +10,8 @@ export const linkdata = [
             },
             {
                 icon: IconCube,
-                label: "Forks",
-                link: "/forks",
+                label: "Orphaned",
+                link: "/orphaned",
             },
             {
                 icon: IconTransfer,
@@ -32,7 +32,7 @@ export const linkdata = [
 
 export const mobileLinkdata = [
     { label: 'Blocks', href: "/blocks", icon: IconCube },
-    { label: 'Forks', href: "/forks", icon: IconCube },
+    { label: 'Orphaned', href: "/orphaned", icon: IconCube },
     { label: 'Transactions', href: "/txs", icon: IconTransfer },
     { label: 'Utxos', href: "/utxos", icon: IconTransfer },
     { label: 'Tokens', href: "/tokens", icon: IconDatabaseCog },

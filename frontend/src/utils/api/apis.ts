@@ -48,7 +48,7 @@ export const queryBlocks = ({
     });
 }
 
-export const queryForks = ({
+export const queryOrphaned = ({
     page,
     size,
 }: {
@@ -56,7 +56,7 @@ export const queryForks = ({
     size: number,
 }) => {
     return service({
-        url: url(`/api/forks`),
+        url: url(`/api/orphaned`),
         method: "GET",
         params: {
             page,

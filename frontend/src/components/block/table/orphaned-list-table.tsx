@@ -1,12 +1,12 @@
 import NavTextLink from "@/components/base/nav-text-link";
 import TitleText from "@/components/base/title-text";
 import PaginationContent from "@/components/pagination-content";
-import { requestForkListData, setForksPage } from "@/store/block/block-slice";
+import { requestOrphanedListData, setOrphanedPage } from "@/store/block/block-slice";
 import {
-  useForks,
-  useForksPage,
-  useForksTotalPage,
-  useLoadingForks,
+  useOrphaned,
+  useOrphanedPage,
+  useOrphanedTotalPage,
+  useLoadingOrphaned,
 } from "@/store/block/hooks";
 import { useAppDispatch } from "@/store/hooks";
 import { stringConvertToTimestamp } from "@/utils/data-format";
@@ -30,26 +30,26 @@ const FormattedNumber = ({ value }: { value: number | string | undefined }) => {
   return <>{Number(value).toLocaleString()}</>;
 };
 
-export default function ForkListTable() {
+export default function OrphanedListTable() {
   const dispatch = useAppDispatch();
-  const forkPage = useForksPage();
-  const totalPages = useForksTotalPage();
+  const orphanedPage = useOrphanedPage();
+  const totalPages = useOrphanedTotalPage();
   const router = useRouter();
   useEffect(() => {
-    dispatch(requestForkListData({ page: forkPage }));
-  }, [forkPage]);
-  const loading = useLoadingForks();
-  const forks = useForks();
+    dispatch(requestOrphanedListData({ page: orphanedPage }));
+  }, [orphanedPage]);
+  const loading = useLoadingOrphaned();
+  const orphaned = useOrphaned();
 
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-xl font-bold">Forks</CardTitle>
+        <CardTitle className="text-xl font-bold">Orphaned</CardTitle>
         <PaginationContent
           total={totalPages}
-          currentPage={forkPage}
+          currentPage={orphanedPage}
           onchange={function (value: number): void {
-            dispatch(setForksPage(value));
+            dispatch(setOrphanedPage(value));
           }}
         />
       </CardHeader>
@@ -69,8 +69,8 @@ export default function ForkListTable() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {forks &&
-                  forks.map((element) => (
+                {orphaned &&
+                  orphaned.map((element) => (
                     <TableRow key={element.block}>
                       <TableCell>
                         <FormattedNumber value={element.block} />
@@ -107,8 +107,8 @@ export default function ForkListTable() {
             </Table>
           </div>
           <div className="flex flex-col gap-2 sm:hidden">
-            {forks &&
-              forks.map((item, index) => {
+            {orphaned &&
+              orphaned.map((item, index) => {
                 return (
                   <div
                     key={index}

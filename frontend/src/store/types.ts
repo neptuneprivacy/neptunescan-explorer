@@ -15,10 +15,10 @@ export interface BlockState {
 
     rpcBlockData: RpcBlock | null
 
-    loadingForkList: boolean;
-    forkList: Block[]
-    forksPage: number,
-    forksTotalPage: number
+    loadingOrphanedList: boolean;
+    orphanedList: Block[]
+    orphanedPage: number,
+    orphanedTotalPage: number
 }
 
 export interface OverviewState {

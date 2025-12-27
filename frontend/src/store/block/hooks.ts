@@ -27,18 +27,18 @@ export const useBlocksTotalPage = () => {
     return useAppSelector(state => state.block.blocksTotalPage);
 }
 
-export const useLoadingForks = () => {
-    return useAppSelector(state => state.block.loadingForkList);
+export const useLoadingOrphaned = () => {
+    return useAppSelector(state => state.block.loadingOrphanedList);
 }
-export const useForks = () => {
-    return useAppSelector(state => state.block.forkList);
+export const useOrphaned = () => {
+    return useAppSelector(state => state.block.orphanedList);
 }
 
-export const useForksPage = () => {
-    return useAppSelector(state => state.block.forksPage);
+export const useOrphanedPage = () => {
+    return useAppSelector(state => state.block.orphanedPage);
 }
-export const useForksTotalPage = () => {
-    return useAppSelector(state => state.block.forksTotalPage);
+export const useOrphanedTotalPage = () => {
+    return useAppSelector(state => state.block.orphanedTotalPage);
 }
 
 

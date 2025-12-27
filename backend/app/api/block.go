@@ -120,14 +120,14 @@ func (s *Server) GetBlocks(ctx context.Context, request GetBlocksRequestObject) 
 
 }
 
-// GetForks implements StrictServerInterface.
-func (s *Server) GetForks(ctx context.Context, request GetForksRequestObject) (GetForksResponseObject, error) {
+// GetOrphaned implements StrictServerInterface.
+func (s *Server) GetOrphaned(ctx context.Context, request GetOrphanedRequestObject) (GetOrphanedResponseObject, error) {
 
 	var blocks []Blockitem
 	var count int64
 
 	err := timescale.GetPostgresGormTypedDB(ctx, &models.Block{}).
-		Scopes(models.ScopeIsFork).
+		Scopes(models.ScopeIsOrphaned).
 		Count(&count).
 		Select(
 			"height as block", "digest as block_hash", "coinbase_amount as coinbase_reward", "fee",
@@ -141,7 +141,7 @@ func (s *Server) GetForks(ctx context.Context, request GetForksRequestObject) (G
 		return nil, err
 	}
 
-	return GetForks200JSONResponse{
+	return GetOrphaned200JSONResponse{
 		Success: true,
 		Blocks:  blocks,
 		Count:   count,

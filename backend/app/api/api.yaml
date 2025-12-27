@@ -370,9 +370,9 @@ paths:
                   - success
           headers: {}
       security: []
-  /forks:
+  /orphaned:
     get:
-      summary: Forks
+      summary: Orphaned
       deprecated: false
       description: ''
       tags: []

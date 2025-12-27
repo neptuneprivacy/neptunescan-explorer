@@ -4,7 +4,7 @@ import {
   queryBlockByRpc,
   queryBlockDetail,
   queryBlocks,
-  queryForks,
+  queryOrphaned,
   queryLatestBlocks,
 } from "@/utils/api/apis";
 import { Block, BlockDetail, RpcBlock } from "@/utils/api/types";
@@ -23,10 +23,10 @@ const initialState: BlockState = {
   wsClientBlockData: null,
   rpcBlockData: null,
 
-  loadingForkList: false,
-  forkList: [],
-  forksPage: 1,
-  forksTotalPage: 0,
+  loadingOrphanedList: false,
+  orphanedList: [],
+  orphanedPage: 1,
+  orphanedTotalPage: 0,
 };
 
 const blockSlice = createSlice({
@@ -39,8 +39,8 @@ const blockSlice = createSlice({
     updateLatestBlock: (state, action) => {
       state.wsClientBlockData = action.payload;
     },
-    setForksPage: (state, action) => {
-      state.forksPage = action.payload;
+    setOrphanedPage: (state, action) => {
+      state.orphanedPage = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -83,16 +83,16 @@ const blockSlice = createSlice({
       state.blocksTotalPage = action.payload.total;
     });
 
-    builder.addCase(requestForkListData.pending, (state, action) => {
-      state.loadingForkList = true;
+    builder.addCase(requestOrphanedListData.pending, (state, action) => {
+      state.loadingOrphanedList = true;
     });
-    builder.addCase(requestForkListData.rejected, (state, action) => {
-      state.loadingForkList = false;
+    builder.addCase(requestOrphanedListData.rejected, (state, action) => {
+      state.loadingOrphanedList = false;
     });
-    builder.addCase(requestForkListData.fulfilled, (state, action) => {
-      state.loadingForkList = false;
-      state.forkList = action.payload.data;
-      state.forksTotalPage = action.payload.total;
+    builder.addCase(requestOrphanedListData.fulfilled, (state, action) => {
+      state.loadingOrphanedList = false;
+      state.orphanedList = action.payload.data;
+      state.orphanedTotalPage = action.payload.total;
     });
 
     builder.addCase(requestBlockInfoByRpc.fulfilled, (state, action) => {
@@ -169,11 +169,11 @@ export const requestBlockListData = createAsyncThunk<
   };
 });
 
-export const requestForkListData = createAsyncThunk<
+export const requestOrphanedListData = createAsyncThunk<
   { data: Block[]; total: number },
   { page: number }
->("/api/block/requestForkListData", async ({ page }) => {
-  const res = await queryForks({
+>("/api/block/requestOrphanedListData", async ({ page }) => {
+  const res = await queryOrphaned({
     page: page - 1,
     size: 25,
   });
@@ -207,7 +207,7 @@ export const requestBlockInfoByHash = createAsyncThunk<
   };
 });
 
-export const { setBlocksPage, setForksPage, updateLatestBlock } =
+export const { setBlocksPage, setOrphanedPage, updateLatestBlock } =
   blockSlice.actions;
 
 export default blockSlice.reducer;

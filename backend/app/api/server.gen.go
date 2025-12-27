@@ -155,8 +155,8 @@ type GetBlocksParams struct {
 	PageSize int `form:"page_size" json:"page_size"`
 }
 
-// GetForksParams defines parameters for GetForks.
-type GetForksParams struct {
+// GetOrphanedParams defines parameters for GetOrphaned.
+type GetOrphanedParams struct {
 	Page     int `form:"page" json:"page"`
 	PageSize int `form:"page_size" json:"page_size"`
 }
@@ -216,9 +216,9 @@ type ServerInterface interface {
 	// Blocks
 	// (GET /blocks)
 	GetBlocks(c *gin.Context, params GetBlocksParams)
-	// Forks
-	// (GET /forks)
-	GetForks(c *gin.Context, params GetForksParams)
+	// Orphaned
+	// (GET /orphaned)
+	GetOrphaned(c *gin.Context, params GetOrphanedParams)
 	// Network Overview
 	// (GET /overview)
 	GetOverview(c *gin.Context)
@@ -367,13 +367,13 @@ func (siw *ServerInterfaceWrapper) GetBlocks(c *gin.Context) {
 	siw.Handler.GetBlocks(c, params)
 }
 
-// GetForks operation middleware
-func (siw *ServerInterfaceWrapper) GetForks(c *gin.Context) {
+// GetOrphaned operation middleware
+func (siw *ServerInterfaceWrapper) GetOrphaned(c *gin.Context) {
 
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetForksParams
+	var params GetOrphanedParams
 
 	// ------------- Required query parameter "page" -------------
 
@@ -412,7 +412,7 @@ func (siw *ServerInterfaceWrapper) GetForks(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetForks(c, params)
+	siw.Handler.GetOrphaned(c, params)
 }
 
 // GetOverview operation middleware
@@ -802,7 +802,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.GET(options.BaseURL+"/block/mempool", wrapper.GetBlockMempool)
 	router.GET(options.BaseURL+"/block/:height", wrapper.GetBlockHeight)
 	router.GET(options.BaseURL+"/blocks", wrapper.GetBlocks)
-	router.GET(options.BaseURL+"/forks", wrapper.GetForks)
+	router.GET(options.BaseURL+"/orphaned", wrapper.GetOrphaned)
 	router.GET(options.BaseURL+"/overview", wrapper.GetOverview)
 	router.GET(options.BaseURL+"/rpc/block/:height_or_hash", wrapper.GetRpcBlockHeightOrHash)
 	router.GET(options.BaseURL+"/rpc/pow_puzzle", wrapper.GetRpcPowPuzzle)
@@ -913,22 +913,22 @@ func (response GetBlocks200JSONResponse) VisitGetBlocksResponse(w http.ResponseW
 	return json.NewEncoder(w).Encode(response)
 }
 
-type GetForksRequestObject struct {
-	Params GetForksParams
+type GetOrphanedRequestObject struct {
+	Params GetOrphanedParams
 }
 
-type GetForksResponseObject interface {
-	VisitGetForksResponse(w http.ResponseWriter) error
+type GetOrphanedResponseObject interface {
+	VisitGetOrphanedResponse(w http.ResponseWriter) error
 }
 
-type GetForks200JSONResponse struct {
+type GetOrphaned200JSONResponse struct {
 	Blocks  []Blockitem `json:"blocks"`
 	Count   int64       `json:"count"`
 	Message string      `json:"message"`
 	Success bool        `json:"success"`
 }
 
-func (response GetForks200JSONResponse) VisitGetForksResponse(w http.ResponseWriter) error {
+func (response GetOrphaned200JSONResponse) VisitGetOrphanedResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -1227,9 +1227,9 @@ type StrictServerInterface interface {
 	// Blocks
 	// (GET /blocks)
 	GetBlocks(ctx context.Context, request GetBlocksRequestObject) (GetBlocksResponseObject, error)
-	// Forks
-	// (GET /forks)
-	GetForks(ctx context.Context, request GetForksRequestObject) (GetForksResponseObject, error)
+	// Orphaned
+	// (GET /orphaned)
+	GetOrphaned(ctx context.Context, request GetOrphanedRequestObject) (GetOrphanedResponseObject, error)
 	// Network Overview
 	// (GET /overview)
 	GetOverview(ctx context.Context, request GetOverviewRequestObject) (GetOverviewResponseObject, error)
@@ -1387,17 +1387,17 @@ func (sh *strictHandler) GetBlocks(ctx *gin.Context, params GetBlocksParams) {
 	}
 }
 
-// GetForks operation middleware
-func (sh *strictHandler) GetForks(ctx *gin.Context, params GetForksParams) {
-	var request GetForksRequestObject
+// GetOrphaned operation middleware
+func (sh *strictHandler) GetOrphaned(ctx *gin.Context, params GetOrphanedParams) {
+	var request GetOrphanedRequestObject
 
 	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetForks(ctx, request.(GetForksRequestObject))
+		return sh.ssi.GetOrphaned(ctx, request.(GetOrphanedRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetForks")
+		handler = middleware(handler, "GetOrphaned")
 	}
 
 	response, err := handler(ctx, request)
@@ -1405,8 +1405,8 @@ func (sh *strictHandler) GetForks(ctx *gin.Context, params GetForksParams) {
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetForksResponseObject); ok {
-		if err := validResponse.VisitGetForksResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(GetOrphanedResponseObject); ok {
+		if err := validResponse.VisitGetOrphanedResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

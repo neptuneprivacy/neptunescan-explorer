@@ -200,11 +200,11 @@ func (b *BlockDataSource) Process(ctx context.Context, prev *Block) error {
 		prevDigest = prev.Digest
 	}
 
-	if b.Block.Height != 0 && prevDigest != b.Block.PrevBlockDigest { //this is a fork
-		logger.Warn("Fork detected, will exit", "height", b.Block.Height, "digest", prevDigest)
+	if b.Block.Height != 0 && prevDigest != b.Block.PrevBlockDigest { //this is an orphaned block
+		logger.Warn("Orphaned block detected, will exit", "height", b.Block.Height, "digest", prevDigest)
 
 		if err := tx.GetTxTypedDB(ctx, b.Block).Where("height > ?", max(0, b.Block.Height-10)).Delete(&Block{}).Error; err != nil {
-			logger.Error("failed to delete fork", "err", err)
+			logger.Error("failed to delete orphaned block", "err", err)
 		}
 
 		var sum struct {
@@ -323,6 +323,6 @@ func ScopeIsCanonical(db *gorm.DB) *gorm.DB {
 	return db.Where("is_canonical = true")
 }
 
-func ScopeIsFork(db *gorm.DB) *gorm.DB {
+func ScopeIsOrphaned(db *gorm.DB) *gorm.DB {
 	return db.Where("is_canonical = false")
 }
