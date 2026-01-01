@@ -47,6 +47,7 @@ type RPCBlock struct {
 	IsTip                  bool     `json:"is_tip"`
 	IsCanonical            bool     `json:"is_canonical"`
 	SiblingBlocks          []string `json:"sibling_blocks"`
+	GuesserDigest          string   `json:"guesser_digest"`
 }
 
 func (n *NeptuneClient) GetBlockByHeight(ctx context.Context, height int64) (*RPCBlock, error) {

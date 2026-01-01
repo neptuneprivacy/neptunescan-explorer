@@ -42,6 +42,7 @@ type Block struct {
 	Fee                    types.Big      `json:"fee" gorm:"type:numeric"`
 	IsCanonical            bool           `json:"is_canonical" gorm:"index:height_fork"`
 	SiblingBlocks          pq.StringArray `json:"sibling_blocks" gorm:"type:text[]"`
+	GuesserDigest          string         `json:"guesser_digest"`
 }
 
 type Inputs struct {
@@ -114,6 +115,7 @@ func BlockFromRpcType(rpcBlock *RPCBlock) *Block {
 		Fee:                    types.NewBigInt(rpcBlock.Fee.Rsh(rpcBlock.Fee, 2)),
 		IsCanonical:            rpcBlock.IsCanonical,
 		SiblingBlocks:          rpcBlock.SiblingBlocks,
+		GuesserDigest:          rpcBlock.GuesserDigest,
 	}
 
 }

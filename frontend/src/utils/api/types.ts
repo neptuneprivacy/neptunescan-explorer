@@ -12,6 +12,7 @@ export interface RpcBlock {
     transactionCount: number;
     digest: string;
     prev_block_digest: string;
+    guesser_digest: string;
     nonce: string;
     cumulative_proof_of_work: string;
     difficulty: string;

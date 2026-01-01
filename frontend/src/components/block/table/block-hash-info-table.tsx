@@ -176,6 +176,10 @@ export default function BlockHashInfoTable({ hash }: { hash: string }) {
             }
           />
           <InfoRow
+            label="Miner ID"
+            value={<span className="font-mono">{rpcBlock?.guesser_digest}</span>}
+          />
+          <InfoRow
             label="Nonce"
             value={<span className="font-mono">{rpcBlock?.nonce}</span>}
           />
