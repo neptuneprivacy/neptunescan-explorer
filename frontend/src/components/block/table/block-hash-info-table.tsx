@@ -1,4 +1,3 @@
-import NavTextLink from "@/components/base/nav-text-link";
 import { TimeClock } from "@/components/TimeClock";
 import { useLoadingBlockInfo, useRpcBlockData } from "@/store/block/hooks";
 import { useAppDispatch } from "@/store/hooks";
@@ -10,11 +9,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import CopyButton from "@/components/ui/copy-button";
+import { getMinerConfigByID } from "@/config/miner-config";
 
 const FormattedNumber = ({ value }: { value: number | string | undefined }) => {
   if (value === undefined || value === null) return null;
@@ -177,7 +176,36 @@ export default function BlockHashInfoTable({ hash }: { hash: string }) {
           />
           <InfoRow
             label="Miner ID"
-            value={<span className="font-mono">{rpcBlock?.guesser_digest}</span>}
+            value={
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[rgb(59,64,167)] cursor-pointer hover:underline font-mono"
+                  onClick={() => {
+                    if (rpcBlock?.guesser_digest) {
+                      router.push(`/miner/${rpcBlock.guesser_digest}`);
+                    }
+                  }}
+                >
+                  {(() => {
+                    let minerConfig = getMinerConfigByID(rpcBlock?.guesser_digest ?? "");
+                    let name = minerConfig ? minerConfig.name : rpcBlock?.guesser_digest;
+                    return (
+                      <span className="inline-flex items-center gap-2">
+                        {minerConfig ? (
+                          <img
+                            src={minerConfig.iconURL}
+                            alt={minerConfig.name}
+                            className="h-5 w-5 rounded-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : null}
+                        <span className="font-mono">{name}</span>
+                      </span>
+                    );
+                  })()}
+                </span>
+              </div>
+            }
           />
           <InfoRow
             label="Nonce"

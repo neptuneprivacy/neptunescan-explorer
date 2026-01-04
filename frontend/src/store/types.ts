@@ -33,7 +33,7 @@ export interface StatsState {
     targetChartDatas: TargetChart[]
 
     loadingGuesser: boolean;
-    guesserChartDatas:GuessertChart[]
+    guesserChartDatas: GuessertChart[]
 }
 
 export interface UtxoState {
@@ -62,3 +62,21 @@ export interface TransactionsState {
     loadingBlockTxs: boolean;
     blockTxDatas: TransactionData[]
 }
+
+export interface MinerState {
+    loadingMinerStatData: boolean;
+    minerStatData: MinerStatData | null
+
+    loadingMinerBlocks: boolean;
+    minerBlocks: Block[]
+    
+    minerBlocksPage: number,
+    minerBlocksTotalPage: number
+}
+
+export interface MinerStatData {
+    work_24h: string,
+    work_4h: string
+    count_4h: number
+    count_24h: number
+} 
