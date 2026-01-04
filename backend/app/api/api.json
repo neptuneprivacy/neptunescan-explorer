@@ -1,11 +1,219 @@
 {
+  "openapi": "3.0.1",
   "info": {
-    "title": "neptune",
+    "title": "neptune-privacy",
     "description": "",
     "version": "1.0.0"
   },
   "tags": [],
   "paths": {
+    "/miner/leaderboard": {
+      "get": {
+        "summary": "MinerLeaderBoard",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "duration",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": "24h",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "24h",
+                "4h"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": 0,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": 20,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MinerLeaderBoardItem"
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "data",
+                    "total"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/miner/stat/{digest}": {
+      "get": {
+        "summary": "MinerStat",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "digest",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "work_24h": {
+                      "type": "string"
+                    },
+                    "work_4h": {
+                      "type": "string"
+                    },
+                    "count_24h": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "count_4h": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "work_24h",
+                    "work_4h",
+                    "count_24h",
+                    "count_4h"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/miner/blocks/{digest}": {
+      "get": {
+        "summary": "MinerBlocks",
+        "deprecated": false,
+        "description": "",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "digest",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/blockitem"
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "total",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
     "/trend/target": {
       "get": {
         "summary": "NetworkTargetTrend",
@@ -18,43 +226,46 @@
             "in": "query",
             "description": "",
             "required": true,
-            "enum": [
-              "all",
-              "month",
-              "week",
-              "day"
-            ],
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "month",
+                "week",
+                "day"
+              ]
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                },
-                "chart": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/chart.Point"
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "chart": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/chart.Point"
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "chart"
+                  ]
                 }
-              },
-              "required": [
-                "success",
-                "chart"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/trend/fee": {
@@ -69,43 +280,46 @@
             "in": "query",
             "description": "",
             "required": true,
-            "enum": [
-              "all",
-              "month",
-              "week",
-              "day"
-            ],
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "month",
+                "week",
+                "day"
+              ]
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                },
-                "chart": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/chart.Point"
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "chart": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/chart.Point"
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "chart"
+                  ]
                 }
-              },
-              "required": [
-                "success",
-                "chart"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/trend/reward": {
@@ -120,43 +334,46 @@
             "in": "query",
             "description": "",
             "required": true,
-            "enum": [
-              "all",
-              "month",
-              "week",
-              "day"
-            ],
-            "type": "string"
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "month",
+                "week",
+                "day"
+              ]
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "OK",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                },
-                "chart": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/chart.RewardPoint"
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "chart": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/chart.RewardPoint"
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "chart"
+                  ]
                 }
-              },
-              "required": [
-                "success",
-                "chart"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/utxo/list": {
@@ -171,63 +388,114 @@
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "pageSize",
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "count": {
-                  "type": "integer",
-                  "format": "int64"
-                },
-                "success": {
-                  "type": "boolean"
-                },
-                "utxos": {
-                  "type": "array",
-                  "items": {
-                    "properties": {
-                      "id": {
-                        "type": "integer",
-                        "description": "ID",
-                        "format": "int64"
-                      },
-                      "digest": {
-                        "type": "string"
-                      }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "format": "int64"
                     },
-                    "required": [
-                      "id",
-                      "digest"
-                    ],
-                    "$ref": "#/definitions/UtxoDigest"
-                  }
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "utxos": {
+                      "type": "array",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "ID",
+                            "format": "int64"
+                          },
+                          "digest": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "digest"
+                        ],
+                        "$ref": "#/components/schemas/UtxoDigest"
+                      }
+                    }
+                  },
+                  "required": [
+                    "count",
+                    "success",
+                    "utxos"
+                  ]
                 }
-              },
-              "required": [
-                "count",
-                "success",
-                "utxos"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
+      }
+    },
+    "/utxo/{digest}": {
+      "get": {
+        "summary": "getUtxoByDigest",
+        "deprecated": false,
+        "description": "Get UTXO details by digest",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "digest",
+            "in": "path",
+            "description": "UTXO digest",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "utxo": {
+                      "$ref": "#/components/schemas/UtxoDetail"
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "utxo"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
       }
     },
     "/block/mempool": {
@@ -240,24 +508,25 @@
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
                 }
-              },
-              "required": [
-                "success"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "text/event-stream"
-        ]
+        "security": []
       }
     },
     "/tx/list": {
@@ -272,49 +541,54 @@
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "pageSize",
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer"
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                },
-                "count": {
-                  "type": "integer",
-                  "format": "int64"
-                },
-                "txs": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/transactionListItem"
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "txs": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/transactionListItem"
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "txs",
+                    "count"
+                  ]
                 }
-              },
-              "required": [
-                "success",
-                "txs",
-                "count"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/tx/{txid}": {
@@ -329,34 +603,38 @@
             "in": "path",
             "description": "",
             "required": true,
-            "type": "string"
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                },
-                "tx": {
-                  "$ref": "#/definitions/transaction"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "tx": {
+                      "$ref": "#/components/schemas/transaction"
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "tx"
+                  ]
                 }
-              },
-              "required": [
-                "success",
-                "tx"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/transaction/by_height/{height}": {
@@ -371,38 +649,42 @@
             "in": "path",
             "description": "",
             "required": true,
-            "format": "int64",
-            "type": "integer"
+            "example": 0,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                },
-                "txs": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/transactionListItem"
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "txs": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/transactionListItem"
+                      }
+                    }
+                  },
+                  "required": [
+                    "success",
+                    "txs"
+                  ]
                 }
-              },
-              "required": [
-                "success",
-                "txs"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/blocks": {
@@ -417,56 +699,61 @@
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer",
-            "x-example": 1
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "page_size",
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer",
-            "x-example": 5
+            "example": 5,
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean",
-                  "default": true
-                },
-                "count": {
-                  "type": "integer",
-                  "format": "int64"
-                },
-                "message": {
-                  "type": "string"
-                },
-                "blocks": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/blockitem"
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "count": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "blocks": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/blockitem"
+                      }
+                    }
+                  },
+                  "required": [
+                    "count",
+                    "message",
+                    "blocks",
+                    "success"
+                  ]
                 }
-              },
-              "required": [
-                "count",
-                "message",
-                "blocks",
-                "success"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/orphaned": {
@@ -481,56 +768,61 @@
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer",
-            "x-example": 1
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
           },
           {
             "name": "page_size",
             "in": "query",
             "description": "",
             "required": true,
-            "type": "integer",
-            "x-example": 5
+            "example": 5,
+            "schema": {
+              "type": "integer"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean",
-                  "default": true
-                },
-                "count": {
-                  "type": "integer",
-                  "format": "int64"
-                },
-                "message": {
-                  "type": "string"
-                },
-                "blocks": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/blockitem"
-                  }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "count": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "blocks": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/blockitem"
+                      }
+                    }
+                  },
+                  "required": [
+                    "count",
+                    "message",
+                    "blocks",
+                    "success"
+                  ]
                 }
-              },
-              "required": [
-                "count",
-                "message",
-                "blocks",
-                "success"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/block/{height}": {
@@ -545,68 +837,69 @@
             "in": "path",
             "description": "",
             "required": true,
-            "format": "int64",
-            "type": "integer",
-            "x-example": 33
+            "example": 33,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "examples": {
+            "content": {
               "application/json": {
-                "success": true,
-                "count": 1,
-                "message": "",
-                "detail": {
-                  "common": {
-                    "block": 3383,
-                    "block_hash": "f9af4dadfce531edac4faeeea287eaf447f5a3b5eaf336fc02d9a1d93976dcefb781030000000000",
-                    "time": "2025-02-24T16:45:34.134+08:00",
-                    "target": "19618209078016",
-                    "block_coinbase_reward": 128,
-                    "block_gas": 0,
-                    "network": 0
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "$ref": "#/components/schemas/blockcommon"
+                    }
                   },
-                  "expand": {
-                    "inputs": 0,
-                    "outputs": 2,
-                    "sibling_blocks": [
-                      "3eeaed3acdd8765b9a3e689d74f745365d6a3de57fb4a9a19c46ac432ce419a92fb82d47dc0d3f54",
-                      "3eeaed3acdd8765b9a3e689d74f745365d6a3de57fb4a9a19c46ac432ce419a92fb82d47dc0d3f54"
-                    ],
-                    "cumulative_proof_of_work": 0
+                  "required": [
+                    "success",
+                    "message",
+                    "detail"
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "count": 1,
+                  "message": "",
+                  "detail": {
+                    "common": {
+                      "block": 3383,
+                      "block_hash": "f9af4dadfce531edac4faeeea287eaf447f5a3b5eaf336fc02d9a1d93976dcefb781030000000000",
+                      "time": "2025-02-24T16:45:34.134+08:00",
+                      "target": "19618209078016",
+                      "block_coinbase_reward": 128,
+                      "block_gas": 0,
+                      "network": 0
+                    },
+                    "expand": {
+                      "inputs": 0,
+                      "outputs": 2,
+                      "sibling_blocks": [
+                        "3eeaed3acdd8765b9a3e689d74f745365d6a3de57fb4a9a19c46ac432ce419a92fb82d47dc0d3f54",
+                        "3eeaed3acdd8765b9a3e689d74f745365d6a3de57fb4a9a19c46ac432ce419a92fb82d47dc0d3f54"
+                      ],
+                      "cumulative_proof_of_work": 0
+                    }
                   }
                 }
               }
             },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean",
-                  "default": true
-                },
-                "message": {
-                  "type": "string"
-                },
-                "detail": {
-                  "$ref": "#/definitions/blockcommon"
-                }
-              },
-              "required": [
-                "success",
-                "message",
-                "detail"
-              ]
-            }
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/rpc/block/{height_or_hash}": {
@@ -621,24 +914,27 @@
             "in": "path",
             "description": "",
             "required": true,
-            "type": "string",
-            "x-example": "1"
+            "example": "1",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/block/event": {
@@ -651,27 +947,26 @@
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "examples": {
-              "text/event-stream": "event: blocks\ndata: {\"height\":5032,\"timestamp\":\"2025-03-17T03:27:17.037Z\",\"inputs\":0,\"outputs\":2}"
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                },
+                "example": "event: blocks\ndata: {\"height\":5032,\"timestamp\":\"2025-03-17T03:27:17.037Z\",\"inputs\":0,\"outputs\":2}"
+              }
             },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                }
-              },
-              "required": [
-                "success"
-              ]
-            }
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "text/event-stream"
-        ]
+        "security": []
       }
     },
     "/rpc/pow_puzzle": {
@@ -684,17 +979,18 @@
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/octet-stream"
-        ]
+        "security": []
       }
     },
     "/overview": {
@@ -707,70 +1003,69 @@
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "examples": {
+            "content": {
               "application/json": {
-                "success": true,
-                "message": "",
-                "overview": {
-                  "height": 3382,
-                  "block_hash": "986c5f7e111a32d7bffd8e4440e543b5706df3bf404243cd5a43c929069d29e27ebb040000000000",
-                  "timestamp": "2025-03-06T09:35:23.429+08:00",
-                  "proof_target": 23552949567991,
-                  "total_reward": 128128128
-                }
-              }
-            },
-            "schema": {
-              "type": "object",
-              "properties": {
-                "success": {
-                  "type": "boolean"
-                },
-                "message": {
-                  "type": "string"
-                },
-                "overview": {
+                "schema": {
+                  "type": "object",
                   "properties": {
-                    "height": {
-                      "type": "integer",
-                      "format": "int64"
+                    "success": {
+                      "type": "boolean"
                     },
-                    "block_hash": {
+                    "message": {
                       "type": "string"
                     },
-                    "timestamp": {
-                      "type": "string"
-                    },
-                    "proof_target": {
-                      "type": "string"
-                    },
-                    "total_reward": {
-                      "type": "string"
+                    "overview": {
+                      "properties": {
+                        "height": {
+                          "type": "integer",
+                          "format": "int64"
+                        },
+                        "block_hash": {
+                          "type": "string"
+                        },
+                        "timestamp": {
+                          "type": "string"
+                        },
+                        "proof_target": {
+                          "type": "string"
+                        },
+                        "total_reward": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "height",
+                        "block_hash",
+                        "timestamp",
+                        "proof_target",
+                        "total_reward"
+                      ],
+                      "$ref": "#/components/schemas/overview"
                     }
                   },
                   "required": [
-                    "height",
-                    "block_hash",
-                    "timestamp",
-                    "proof_target",
-                    "total_reward"
-                  ],
-                  "$ref": "#/definitions/overview"
+                    "success",
+                    "message",
+                    "overview"
+                  ]
+                },
+                "example": {
+                  "success": true,
+                  "message": "",
+                  "overview": {
+                    "height": 3382,
+                    "block_hash": "986c5f7e111a32d7bffd8e4440e543b5706df3bf404243cd5a43c929069d29e27ebb040000000000",
+                    "timestamp": "2025-03-06T09:35:23.429+08:00",
+                    "proof_target": 23552949567991,
+                    "total_reward": 128128128
+                  }
                 }
-              },
-              "required": [
-                "success",
-                "message",
-                "overview"
-              ]
-            }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     },
     "/swagger.json": {
@@ -783,17 +1078,18 @@
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/octet-stream"
-        ]
+        "security": []
       }
     },
     "/search": {
@@ -808,360 +1104,416 @@
             "in": "query",
             "description": "",
             "required": false,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
             "description": "",
-            "headers": {},
-            "schema": {
-              "type": "object",
-              "properties": {
-                "block": {
-                  "$ref": "#/definitions/blockitem"
-                },
-                "transaction": {
-                  "$ref": "#/definitions/transactionListItem"
-                },
-                "input": {
-                  "$ref": "#/definitions/txo"
-                },
-                "output": {
-                  "$ref": "#/definitions/txo"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "block": {
+                      "$ref": "#/components/schemas/blockitem"
+                    },
+                    "transaction": {
+                      "$ref": "#/components/schemas/transactionListItem"
+                    },
+                    "input": {
+                      "$ref": "#/components/schemas/txo"
+                    },
+                    "output": {
+                      "$ref": "#/components/schemas/txo"
+                    },
+                    "utxo": {
+                      "type": "string",
+                      "description": "UTXO digest"
+                    }
+                  }
                 }
               }
-            }
+            },
+            "headers": {}
           }
         },
-        "security": [],
-        "produces": [
-          "application/json"
-        ]
+        "security": []
       }
     }
   },
-  "security": [],
-  "swagger": "2.0",
-  "host": "neptune.vxb.ai",
-  "schemes": [
-    "https"
-  ],
-  "basePath": "/api",
-  "definitions": {
-    "blockitem": {
-      "type": "object",
-      "properties": {
-        "block": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "block_hash": {
-          "type": "string"
-        },
-        "time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "proof_target": {
-          "type": "string"
-        },
-        "coinbase_reward": {
-          "type": "string"
-        },
-        "inputs": {
-          "type": "integer"
-        },
-        "outputs": {
-          "type": "integer"
-        },
-        "fee": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "block",
-        "block_hash",
-        "proof_target",
-        "coinbase_reward",
-        "inputs",
-        "outputs",
-        "time",
-        "fee"
-      ]
-    },
-    "chart.Point": {
-      "type": "object",
-      "properties": {
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "interv": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "value": {
-          "type": "number",
-          "format": "double"
-        }
-      },
-      "required": [
-        "interv",
-        "value"
-      ]
-    },
-    "blockcommon": {
-      "type": "object",
-      "properties": {
-        "block": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "block_hash": {
-          "type": "string"
-        },
-        "time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "target": {
-          "type": "string"
-        },
-        "block_coinbase_reward": {
-          "type": "string"
-        },
-        "block_gas": {
-          "type": "string"
-        },
-        "is_canonical": {
-          "type": "boolean"
-        }
-      },
-      "required": [
-        "block",
-        "block_hash",
-        "time",
-        "target",
-        "block_coinbase_reward",
-        "block_gas",
-        "is_canonical"
-      ]
-    },
-    "overview": {
-      "type": "object",
-      "properties": {
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "block_hash": {
-          "type": "string"
-        },
-        "timestamp": {
-          "type": "string"
-        },
-        "proof_target": {
-          "type": "string"
-        },
-        "total_reward": {
-          "type": "string"
-        },
-        "total_fee": {
-          "type": "string"
-        },
-        "network_speed_24h": {
-          "type": "string"
-        },
-        "average_block_time": {
-          "type": "number"
-        },
-        "utxo_count": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "day_reward": {
-          "type": "string"
-        },
-        "day_fee": {
-          "type": "string"
-        },
-        "cumulative_proof_of_work": {
-          "type": "string"
-        },
-        "tx_count": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "required": [
-        "height",
-        "block_hash",
-        "timestamp",
-        "proof_target",
-        "total_reward",
-        "average_block_time",
-        "utxo_count",
-        "day_reward",
-        "cumulative_proof_of_work",
-        "total_fee",
-        "tx_count",
-        "network_speed_24h",
-        "day_fee"
-      ]
-    },
-    "UtxoDigest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "digest": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "digest"
-      ]
-    },
-    "transaction": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "proof_type": {
-          "type": "string"
-        },
-        "num_inputs": {
-          "type": "integer"
-        },
-        "num_outputs": {
-          "type": "integer"
-        },
-        "fee": {
-          "type": "string"
-        },
-        "time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "inputs": {
-          "type": "array",
-          "items": {
+  "components": {
+    "schemas": {
+      "blockitem": {
+        "type": "object",
+        "properties": {
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "block_hash": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "proof_target": {
+            "type": "string"
+          },
+          "coinbase_reward": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "integer"
+          },
+          "outputs": {
+            "type": "integer"
+          },
+          "fee": {
             "type": "string"
           }
         },
-        "outputs": {
-          "type": "array",
-          "items": {
+        "required": [
+          "block",
+          "block_hash",
+          "proof_target",
+          "coinbase_reward",
+          "inputs",
+          "outputs",
+          "time",
+          "fee"
+        ]
+      },
+      "chart.Point": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "interv": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "interv",
+          "value"
+        ]
+      },
+      "blockcommon": {
+        "type": "object",
+        "properties": {
+          "block": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "block_hash": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "target": {
+            "type": "string"
+          },
+          "block_coinbase_reward": {
+            "type": "string"
+          },
+          "block_gas": {
+            "type": "string"
+          },
+          "is_canonical": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "block",
+          "block_hash",
+          "time",
+          "target",
+          "block_coinbase_reward",
+          "block_gas",
+          "is_canonical"
+        ]
+      },
+      "overview": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "block_hash": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "proof_target": {
+            "type": "string"
+          },
+          "total_reward": {
+            "type": "string"
+          },
+          "total_fee": {
+            "type": "string"
+          },
+          "network_speed_24h": {
+            "type": "string"
+          },
+          "average_block_time": {
+            "type": "number"
+          },
+          "utxo_count": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "day_reward": {
+            "type": "string"
+          },
+          "day_fee": {
+            "type": "string"
+          },
+          "cumulative_proof_of_work": {
+            "type": "string"
+          },
+          "tx_count": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "height",
+          "block_hash",
+          "timestamp",
+          "proof_target",
+          "total_reward",
+          "average_block_time",
+          "utxo_count",
+          "day_reward",
+          "cumulative_proof_of_work",
+          "total_fee",
+          "tx_count",
+          "network_speed_24h",
+          "day_fee"
+        ]
+      },
+      "UtxoDigest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "digest": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "id",
+          "digest"
+        ]
       },
-      "required": [
-        "id",
-        "proof_type",
-        "num_inputs",
-        "num_outputs",
-        "fee",
-        "time",
-        "height",
-        "inputs",
-        "outputs"
-      ]
+      "UtxoDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "digest": {
+            "type": "string"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "block_hash": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "in_mempool": {
+            "type": "boolean"
+          },
+          "txid": {
+            "type": "string"
+          },
+          "is_guesser_fee": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "in_mempool"
+        ]
+      },
+      "transaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "proof_type": {
+            "type": "string"
+          },
+          "num_inputs": {
+            "type": "integer"
+          },
+          "num_outputs": {
+            "type": "integer"
+          },
+          "fee": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "proof_type",
+          "num_inputs",
+          "num_outputs",
+          "fee",
+          "time",
+          "height",
+          "inputs",
+          "outputs"
+        ]
+      },
+      "transactionListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "proof_type": {
+            "type": "string"
+          },
+          "num_inputs": {
+            "type": "integer"
+          },
+          "num_outputs": {
+            "type": "integer"
+          },
+          "fee": {
+            "type": "string"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "id",
+          "proof_type",
+          "num_inputs",
+          "num_outputs",
+          "fee",
+          "time",
+          "height"
+        ]
+      },
+      "txo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID"
+          },
+          "height": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "txid": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "height",
+          "txid"
+        ]
+      },
+      "chart.RewardPoint": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "interv": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "value": {
+            "type": "number",
+            "format": "double"
+          },
+          "fee": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "interv",
+          "value",
+          "fee"
+        ]
+      },
+      "MinerLeaderBoardItem": {
+        "type": "object",
+        "properties": {
+          "Digest": {
+            "type": "string"
+          },
+          "TotalWork": {
+            "type": "string"
+          },
+          "BlockCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "Digest",
+          "TotalWork",
+          "BlockCount"
+        ]
+      }
     },
-    "transactionListItem": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "proof_type": {
-          "type": "string"
-        },
-        "num_inputs": {
-          "type": "integer"
-        },
-        "num_outputs": {
-          "type": "integer"
-        },
-        "fee": {
-          "type": "string"
-        },
-        "time": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "required": [
-        "id",
-        "proof_type",
-        "num_inputs",
-        "num_outputs",
-        "fee",
-        "time",
-        "height"
-      ]
-    },
-    "txo": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "ID"
-        },
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "txid": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "height",
-        "txid"
-      ]
-    },
-    "chart.RewardPoint": {
-      "type": "object",
-      "properties": {
-        "height": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "interv": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "value": {
-          "type": "number",
-          "format": "double"
-        },
-        "fee": {
-          "type": "number",
-          "format": "double"
-        }
-      },
-      "required": [
-        "interv",
-        "value",
-        "fee"
-      ]
-    }
+    "securitySchemes": {}
   },
-  "securityDefinitions": {},
-  "x-components": {}
+  "servers": []
 }

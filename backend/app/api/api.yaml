@@ -1,10 +1,152 @@
 openapi: 3.0.1
 info:
-  title: neptune
+  title: neptune-privacy
   description: ''
   version: 1.0.0
 tags: []
 paths:
+  /miner/leaderboard:
+    get:
+      summary: MinerLeaderBoard
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: duration
+          in: query
+          description: ''
+          required: true
+          example: 24h
+          schema:
+            type: string
+            enum:
+              - 24h
+              - 4h
+        - name: page
+          in: query
+          description: ''
+          required: true
+          example: 0
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          description: ''
+          required: true
+          example: 20
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  total:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MinerLeaderBoardItem'
+                required:
+                  - success
+                  - data
+                  - total
+          headers: {}
+      security: []
+  /miner/stat/{digest}:
+    get:
+      summary: MinerStat
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: digest
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  work_24h:
+                    type: string
+                  work_4h:
+                    type: string
+                  count_24h:
+                    type: integer
+                    format: int64
+                  count_4h:
+                    type: integer
+                    format: int64
+                required:
+                  - success
+                  - work_24h
+                  - work_4h
+                  - count_24h
+                  - count_4h
+          headers: {}
+      security: []
+  /miner/blocks/{digest}:
+    get:
+      summary: MinerBlocks
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: digest
+          in: path
+          description: ''
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: ''
+          required: true
+          schema:
+            type: integer
+        - name: page_size
+          in: query
+          description: ''
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  total:
+                    type: integer
+                    format: int64
+                  data:
+                    type: array
+                    items: &ref_2
+                      $ref: '#/components/schemas/blockitem'
+                required:
+                  - success
+                  - total
+                  - data
+          headers: {}
+      security: []
   /trend/target:
     get:
       summary: NetworkTargetTrend
@@ -171,13 +313,14 @@ paths:
     get:
       summary: getUtxoByDigest
       deprecated: false
-      description: 'Get UTXO details by digest'
+      description: Get UTXO details by digest
       tags: []
       parameters:
         - name: digest
           in: path
-          description: 'UTXO digest'
+          description: UTXO digest
           required: true
+          example: ''
           schema:
             type: string
       responses:
@@ -271,6 +414,7 @@ paths:
           in: path
           description: ''
           required: true
+          example: ''
           schema:
             type: string
       responses:
@@ -301,6 +445,7 @@ paths:
           in: path
           description: ''
           required: true
+          example: 0
           schema:
             type: integer
             format: int64
@@ -361,8 +506,7 @@ paths:
                     type: string
                   blocks:
                     type: array
-                    items: &ref_2
-                      $ref: '#/components/schemas/blockitem'
+                    items: *ref_2
                 required:
                   - count
                   - message
@@ -899,6 +1043,18 @@ components:
         - interv
         - value
         - fee
+    MinerLeaderBoardItem:
+      type: object
+      properties:
+        Digest:
+          type: string
+        TotalWork:
+          type: string
+        BlockCount:
+          type: integer
+      required:
+        - Digest
+        - TotalWork
+        - BlockCount
   securitySchemes: {}
 servers: []
-security: []

@@ -19,6 +19,12 @@ import (
 	strictgin "github.com/oapi-codegen/runtime/strictmiddleware/gin"
 )
 
+// Defines values for GetMinerLeaderboardParamsDuration.
+const (
+	N24h GetMinerLeaderboardParamsDuration = "24h"
+	N4h  GetMinerLeaderboardParamsDuration = "4h"
+)
+
 // Defines values for GetTrendFeeParamsDuration.
 const (
 	GetTrendFeeParamsDurationAll   GetTrendFeeParamsDuration = "all"
@@ -42,6 +48,13 @@ const (
 	Month GetTrendTargetParamsDuration = "month"
 	Week  GetTrendTargetParamsDuration = "week"
 )
+
+// MinerLeaderBoardItem defines model for MinerLeaderBoardItem.
+type MinerLeaderBoardItem struct {
+	BlockCount int    `json:"BlockCount"`
+	Digest     string `json:"Digest"`
+	TotalWork  string `json:"TotalWork"`
+}
 
 // UtxoDetail defines model for UtxoDetail.
 type UtxoDetail struct {
@@ -155,6 +168,22 @@ type GetBlocksParams struct {
 	PageSize int `form:"page_size" json:"page_size"`
 }
 
+// GetMinerBlocksDigestParams defines parameters for GetMinerBlocksDigest.
+type GetMinerBlocksDigestParams struct {
+	Page     int `form:"page" json:"page"`
+	PageSize int `form:"page_size" json:"page_size"`
+}
+
+// GetMinerLeaderboardParams defines parameters for GetMinerLeaderboard.
+type GetMinerLeaderboardParams struct {
+	Duration GetMinerLeaderboardParamsDuration `form:"duration" json:"duration"`
+	Page     int                               `form:"page" json:"page"`
+	PageSize int                               `form:"page_size" json:"page_size"`
+}
+
+// GetMinerLeaderboardParamsDuration defines parameters for GetMinerLeaderboard.
+type GetMinerLeaderboardParamsDuration string
+
 // GetOrphanedParams defines parameters for GetOrphaned.
 type GetOrphanedParams struct {
 	Page     int `form:"page" json:"page"`
@@ -216,6 +245,15 @@ type ServerInterface interface {
 	// Blocks
 	// (GET /blocks)
 	GetBlocks(c *gin.Context, params GetBlocksParams)
+	// MinerBlocks
+	// (GET /miner/blocks/{digest})
+	GetMinerBlocksDigest(c *gin.Context, digest string, params GetMinerBlocksDigestParams)
+	// MinerLeaderBoard
+	// (GET /miner/leaderboard)
+	GetMinerLeaderboard(c *gin.Context, params GetMinerLeaderboardParams)
+	// MinerStat
+	// (GET /miner/stat/{digest})
+	GetMinerStatDigest(c *gin.Context, digest string)
 	// Orphaned
 	// (GET /orphaned)
 	GetOrphaned(c *gin.Context, params GetOrphanedParams)
@@ -365,6 +403,150 @@ func (siw *ServerInterfaceWrapper) GetBlocks(c *gin.Context) {
 	}
 
 	siw.Handler.GetBlocks(c, params)
+}
+
+// GetMinerBlocksDigest operation middleware
+func (siw *ServerInterfaceWrapper) GetMinerBlocksDigest(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "digest" -------------
+	var digest string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "digest", c.Param("digest"), &digest, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter digest: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetMinerBlocksDigestParams
+
+	// ------------- Required query parameter "page" -------------
+
+	if paramValue := c.Query("page"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument page is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "page", c.Request.URL.Query(), &params.Page)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter page: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Required query parameter "page_size" -------------
+
+	if paramValue := c.Query("page_size"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument page_size is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "page_size", c.Request.URL.Query(), &params.PageSize)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter page_size: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetMinerBlocksDigest(c, digest, params)
+}
+
+// GetMinerLeaderboard operation middleware
+func (siw *ServerInterfaceWrapper) GetMinerLeaderboard(c *gin.Context) {
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetMinerLeaderboardParams
+
+	// ------------- Required query parameter "duration" -------------
+
+	if paramValue := c.Query("duration"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument duration is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "duration", c.Request.URL.Query(), &params.Duration)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter duration: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Required query parameter "page" -------------
+
+	if paramValue := c.Query("page"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument page is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "page", c.Request.URL.Query(), &params.Page)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter page: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Required query parameter "page_size" -------------
+
+	if paramValue := c.Query("page_size"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandler(c, fmt.Errorf("Query argument page_size is required, but not found"), http.StatusBadRequest)
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "page_size", c.Request.URL.Query(), &params.PageSize)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter page_size: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetMinerLeaderboard(c, params)
+}
+
+// GetMinerStatDigest operation middleware
+func (siw *ServerInterfaceWrapper) GetMinerStatDigest(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "digest" -------------
+	var digest string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "digest", c.Param("digest"), &digest, runtime.BindStyledParameterOptions{Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter digest: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetMinerStatDigest(c, digest)
 }
 
 // GetOrphaned operation middleware
@@ -802,6 +984,9 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.GET(options.BaseURL+"/block/mempool", wrapper.GetBlockMempool)
 	router.GET(options.BaseURL+"/block/:height", wrapper.GetBlockHeight)
 	router.GET(options.BaseURL+"/blocks", wrapper.GetBlocks)
+	router.GET(options.BaseURL+"/miner/blocks/:digest", wrapper.GetMinerBlocksDigest)
+	router.GET(options.BaseURL+"/miner/leaderboard", wrapper.GetMinerLeaderboard)
+	router.GET(options.BaseURL+"/miner/stat/:digest", wrapper.GetMinerStatDigest)
 	router.GET(options.BaseURL+"/orphaned", wrapper.GetOrphaned)
 	router.GET(options.BaseURL+"/overview", wrapper.GetOverview)
 	router.GET(options.BaseURL+"/rpc/block/:height_or_hash", wrapper.GetRpcBlockHeightOrHash)
@@ -907,6 +1092,72 @@ type GetBlocks200JSONResponse struct {
 }
 
 func (response GetBlocks200JSONResponse) VisitGetBlocksResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetMinerBlocksDigestRequestObject struct {
+	Digest string `json:"digest"`
+	Params GetMinerBlocksDigestParams
+}
+
+type GetMinerBlocksDigestResponseObject interface {
+	VisitGetMinerBlocksDigestResponse(w http.ResponseWriter) error
+}
+
+type GetMinerBlocksDigest200JSONResponse struct {
+	Data    []Blockitem `json:"data"`
+	Success bool        `json:"success"`
+	Total   int64       `json:"total"`
+}
+
+func (response GetMinerBlocksDigest200JSONResponse) VisitGetMinerBlocksDigestResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetMinerLeaderboardRequestObject struct {
+	Params GetMinerLeaderboardParams
+}
+
+type GetMinerLeaderboardResponseObject interface {
+	VisitGetMinerLeaderboardResponse(w http.ResponseWriter) error
+}
+
+type GetMinerLeaderboard200JSONResponse struct {
+	Data    []MinerLeaderBoardItem `json:"data"`
+	Success bool                   `json:"success"`
+	Total   int                    `json:"total"`
+}
+
+func (response GetMinerLeaderboard200JSONResponse) VisitGetMinerLeaderboardResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetMinerStatDigestRequestObject struct {
+	Digest string `json:"digest"`
+}
+
+type GetMinerStatDigestResponseObject interface {
+	VisitGetMinerStatDigestResponse(w http.ResponseWriter) error
+}
+
+type GetMinerStatDigest200JSONResponse struct {
+	Count24h int64  `json:"count_24h"`
+	Count4h  int64  `json:"count_4h"`
+	Success  bool   `json:"success"`
+	Work24h  string `json:"work_24h"`
+	Work4h   string `json:"work_4h"`
+}
+
+func (response GetMinerStatDigest200JSONResponse) VisitGetMinerStatDigestResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
@@ -1227,6 +1478,15 @@ type StrictServerInterface interface {
 	// Blocks
 	// (GET /blocks)
 	GetBlocks(ctx context.Context, request GetBlocksRequestObject) (GetBlocksResponseObject, error)
+	// MinerBlocks
+	// (GET /miner/blocks/{digest})
+	GetMinerBlocksDigest(ctx context.Context, request GetMinerBlocksDigestRequestObject) (GetMinerBlocksDigestResponseObject, error)
+	// MinerLeaderBoard
+	// (GET /miner/leaderboard)
+	GetMinerLeaderboard(ctx context.Context, request GetMinerLeaderboardRequestObject) (GetMinerLeaderboardResponseObject, error)
+	// MinerStat
+	// (GET /miner/stat/{digest})
+	GetMinerStatDigest(ctx context.Context, request GetMinerStatDigestRequestObject) (GetMinerStatDigestResponseObject, error)
 	// Orphaned
 	// (GET /orphaned)
 	GetOrphaned(ctx context.Context, request GetOrphanedRequestObject) (GetOrphanedResponseObject, error)
@@ -1380,6 +1640,88 @@ func (sh *strictHandler) GetBlocks(ctx *gin.Context, params GetBlocksParams) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(GetBlocksResponseObject); ok {
 		if err := validResponse.VisitGetBlocksResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetMinerBlocksDigest operation middleware
+func (sh *strictHandler) GetMinerBlocksDigest(ctx *gin.Context, digest string, params GetMinerBlocksDigestParams) {
+	var request GetMinerBlocksDigestRequestObject
+
+	request.Digest = digest
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetMinerBlocksDigest(ctx, request.(GetMinerBlocksDigestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetMinerBlocksDigest")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetMinerBlocksDigestResponseObject); ok {
+		if err := validResponse.VisitGetMinerBlocksDigestResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetMinerLeaderboard operation middleware
+func (sh *strictHandler) GetMinerLeaderboard(ctx *gin.Context, params GetMinerLeaderboardParams) {
+	var request GetMinerLeaderboardRequestObject
+
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetMinerLeaderboard(ctx, request.(GetMinerLeaderboardRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetMinerLeaderboard")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetMinerLeaderboardResponseObject); ok {
+		if err := validResponse.VisitGetMinerLeaderboardResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetMinerStatDigest operation middleware
+func (sh *strictHandler) GetMinerStatDigest(ctx *gin.Context, digest string) {
+	var request GetMinerStatDigestRequestObject
+
+	request.Digest = digest
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetMinerStatDigest(ctx, request.(GetMinerStatDigestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetMinerStatDigest")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetMinerStatDigestResponseObject); ok {
+		if err := validResponse.VisitGetMinerStatDigestResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
