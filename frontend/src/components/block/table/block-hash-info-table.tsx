@@ -1,4 +1,3 @@
-import NavTextLink from "@/components/base/nav-text-link";
 import { TimeClock } from "@/components/TimeClock";
 import { useLoadingBlockInfo, useRpcBlockData } from "@/store/block/hooks";
 import { useAppDispatch } from "@/store/hooks";
@@ -10,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
@@ -177,7 +175,21 @@ export default function BlockHashInfoTable({ hash }: { hash: string }) {
           />
           <InfoRow
             label="Miner ID"
-            value={<span className="font-mono">{rpcBlock?.guesser_digest}</span>}
+            value={
+              <div className="flex items-center gap-2">
+                <span
+                  className="text-[rgb(59,64,167)] cursor-pointer hover:underline font-mono"
+                  onClick={() => {
+                    if (rpcBlock?.guesser_digest) {
+                      router.push(`/miner/${rpcBlock.guesser_digest}`);
+                    }
+                  }}
+                >
+                  {rpcBlock?.guesser_digest}
+                </span>
+                <CopyButton value={rpcBlock?.guesser_digest ?? ""} />
+              </div>
+            }
           />
           <InfoRow
             label="Nonce"

@@ -209,4 +209,34 @@ export const queryUtxoDetail = ({
         url: url(`/api/utxo/${digest}`),
         method: "GET",
     });
+}
+
+export const queryMinerStat = ({
+    digest,
+}: {
+    digest: string,
+}) => {
+    return service({
+        url: url(`/api/miner/stat/${digest}`),
+        method: "GET",
+    });
+}
+
+export const queryMinerBlocks = ({
+    page,
+    size,
+    digest,
+}: {
+    page: number,
+    size: number,
+    digest: string,
+}) => {
+    return service({
+        url: url(`/api/miner/blocks/${digest}`),
+        method: "GET",
+        params: {
+            page,
+            page_size: size,
+        }
+    });
 } 

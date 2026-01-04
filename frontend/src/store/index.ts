@@ -5,6 +5,7 @@ import overviewSlice from "./overview/overview-slice";
 import statsSlice from "./stats/stats-slice";
 import utxoSlice from "./utxo/utxo-slice";
 import transactionsSlice from "./txs/txs-slice";
+import minerSlice from "./miner/miner-slice";
 
 export const store = configureStore({
     reducer: {
@@ -12,7 +13,8 @@ export const store = configureStore({
         overview: overviewSlice,
         stats: statsSlice,
         utxo: utxoSlice,
-        txs: transactionsSlice
+        txs: transactionsSlice,
+        miner: minerSlice
     }
 });
 
