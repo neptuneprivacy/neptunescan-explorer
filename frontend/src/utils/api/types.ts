@@ -136,5 +136,6 @@ export interface TransactionData {
     proof_type: string;
     time: string;
     inputs: string[];
-    outputs: string[]
+    outputs: string[];
+    abandoned: boolean;
 }

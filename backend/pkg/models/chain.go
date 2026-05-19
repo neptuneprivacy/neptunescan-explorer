@@ -9,9 +9,10 @@ import (
 )
 
 type Neptune struct {
-	cache   chan fetch.BlockDataSource[*Block]
-	mempool MemPool
-	utxo    UtxoDigests
+	cache          chan fetch.BlockDataSource[*Block]
+	mempool        MemPool
+	utxo           UtxoDigests
+	mempoolEvents  MempoolEventTracer
 }
 
 func NewEthChain() Neptune {
@@ -67,6 +68,7 @@ func (z *Neptune) LiveDataSources() []fetch.LiveDataSource {
 	return []fetch.LiveDataSource{
 		&z.mempool,
 		&z.utxo,
+		&z.mempoolEvents,
 	}
 }
 

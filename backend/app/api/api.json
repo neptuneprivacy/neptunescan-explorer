@@ -1347,6 +1347,9 @@
           "in_mempool": {
             "type": "boolean"
           },
+          "abandoned": {
+            "type": "boolean"
+          },
           "txid": {
             "type": "string"
           },
@@ -1395,6 +1398,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "abandoned": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -1406,7 +1412,8 @@
           "time",
           "height",
           "inputs",
-          "outputs"
+          "outputs",
+          "abandoned"
         ]
       },
       "transactionListItem": {
@@ -1434,6 +1441,9 @@
           "height": {
             "type": "integer",
             "format": "int64"
+          },
+          "abandoned": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -1443,7 +1453,8 @@
           "num_outputs",
           "fee",
           "time",
-          "height"
+          "height",
+          "abandoned"
         ]
       },
       "txo": {

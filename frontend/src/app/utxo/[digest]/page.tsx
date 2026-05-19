@@ -20,6 +20,7 @@ interface UtxoDetail {
   block_hash?: string;
   time?: string;
   in_mempool: boolean;
+  abandoned?: boolean;
   txid?: string;
   is_guesser_fee?: boolean;
 }
@@ -131,7 +132,11 @@ export default function UtxoDetailPage() {
               <InfoRow
                 label="Status"
                 value={
-                  utxo.in_mempool ? (
+                  utxo.abandoned ? (
+                    <Badge variant="destructive">
+                      Abandoned
+                    </Badge>
+                  ) : utxo.in_mempool ? (
                     <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-300">
                       Pending
                     </Badge>

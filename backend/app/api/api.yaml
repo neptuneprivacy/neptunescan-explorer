@@ -939,6 +939,8 @@ components:
           format: date-time
         in_mempool:
           type: boolean
+        abandoned:
+          type: boolean
         txid:
           type: string
         is_guesser_fee:
@@ -972,6 +974,8 @@ components:
           type: array
           items:
             type: string
+        abandoned:
+          type: boolean
       required:
         - id
         - proof_type
@@ -982,6 +986,7 @@ components:
         - height
         - inputs
         - outputs
+        - abandoned
     transactionListItem:
       type: object
       properties:
@@ -1001,6 +1006,8 @@ components:
         height:
           type: integer
           format: int64
+        abandoned:
+          type: boolean
       required:
         - id
         - proof_type
@@ -1009,6 +1016,7 @@ components:
         - fee
         - time
         - height
+        - abandoned
     txo:
       type: object
       properties:

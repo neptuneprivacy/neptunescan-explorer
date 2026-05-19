@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { Badge } from "@/components/ui/badge";
 
 const FormattedNumber = ({ value }: { value: number | string | undefined }) => {
   if (value === undefined || value === null) return null;
@@ -80,6 +81,8 @@ export default function TransactionListTable() {
                           <NavTextLink href={`/block/${element.height}`}>
                             <FormattedNumber value={element.height} />
                           </NavTextLink>
+                        ) : element.abandoned ? (
+                          <Badge variant="destructive">Abandoned</Badge>
                         ) : (
                           "--"
                         )}
@@ -129,6 +132,8 @@ export default function TransactionListTable() {
                             <NavTextLink href={`/block/${item.height}`}>
                               <FormattedNumber value={item.height} />
                             </NavTextLink>
+                          ) : item.abandoned ? (
+                            <Badge variant="destructive">Abandoned</Badge>
                           ) : (
                             "--"
                           )}

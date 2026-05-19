@@ -121,6 +121,7 @@ func (s *Server) GetUtxoDigest(ctx context.Context, request GetUtxoDigestRequest
 				Where("id = ?", output.Txid).
 				Take(&tx).Error; err == nil {
 				result.Time = &tx.Time
+				result.Abandoned = &tx.Abandoned
 			}
 		}
 	} else {

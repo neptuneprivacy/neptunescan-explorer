@@ -77,6 +77,8 @@ export default function TxDetailInfoTable() {
                       <FormattedNumber value={txDetail.height} />
                     </NavTextLink>
                   </div>
+                ) : txDetail.abandoned ? (
+                  <Badge variant="destructive">Abandoned</Badge>
                 ) : (
                   <Badge variant="outline">Pending</Badge>
                 )

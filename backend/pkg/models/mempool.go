@@ -26,6 +26,7 @@ type MemPoolTransaction struct {
 	Fee        types.Big      `json:"fee" gorm:"type:numeric"`
 	Time       time.Time      `json:"time"`
 	Height     int64          `json:"height"`
+	Abandoned  bool           `json:"abandoned"`
 }
 
 // TableName implements timescale.Table.

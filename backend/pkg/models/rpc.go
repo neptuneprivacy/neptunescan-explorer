@@ -3,6 +3,7 @@ package models
 import (
 	"config"
 	"context"
+	"fmt"
 	"math/big"
 	"rpc_client"
 	"strconv"
@@ -107,6 +108,43 @@ func (n *NeptuneClient) GetMempoolTransactions(ctx context.Context) ([]RpcMemPoo
 		return nil, err
 	}
 	return txs, nil
+}
+
+type RpcMempoolEventsResponse struct {
+	Total  int                    `json:"total"`
+	Events []RpcMempoolEventBatch `json:"events"`
+}
+
+type RpcMempoolEventBatch struct {
+	BlockHeight int64                 `json:"block_height"`
+	Events      []RpcMempoolEventInfo `json:"events"`
+}
+
+type RpcMempoolEventInfo struct {
+	Type   string `json:"type"`
+	Txid   string `json:"txid"`
+	Reason string `json:"reason"`
+}
+
+func (n *NeptuneClient) IsTransactionAbandoned(ctx context.Context, txid string, tipHeight int64) (bool, error) {
+	var resp RpcMempoolEventsResponse
+	err := n.client.Call(ctx, fmt.Sprintf("/rpc/mempool/events?txid=%s", txid), &resp)
+	if err != nil {
+		return false, err
+	}
+
+	for _, batch := range resp.Events {
+		if batch.BlockHeight > tipHeight-5 {
+			continue
+		}
+		for _, event := range batch.Events {
+			if event.Type == "remove" && event.Reason == "abandoned" {
+				return true, nil
+			}
+		}
+	}
+
+	return false, nil
 }
 
 func OnceValue[T any](f func() T) func() T {

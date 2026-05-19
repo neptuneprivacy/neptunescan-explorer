@@ -58,6 +58,7 @@ type MinerLeaderBoardItem struct {
 
 // UtxoDetail defines model for UtxoDetail.
 type UtxoDetail struct {
+	Abandoned    *bool      `json:"abandoned,omitempty"`
 	BlockHash    *string    `json:"block_hash,omitempty"`
 	Digest       *string    `json:"digest,omitempty"`
 	Height       *int64     `json:"height,omitempty"`
@@ -131,6 +132,7 @@ type Overview struct {
 
 // Transaction defines model for transaction.
 type Transaction struct {
+	Abandoned  bool      `json:"abandoned"`
 	Fee        string    `json:"fee"`
 	Height     int64     `json:"height"`
 	Id         string    `json:"id"`
@@ -144,6 +146,7 @@ type Transaction struct {
 
 // TransactionListItem defines model for transactionListItem.
 type TransactionListItem struct {
+	Abandoned  bool      `json:"abandoned"`
 	Fee        string    `json:"fee"`
 	Height     int64     `json:"height"`
 	Id         string    `json:"id"`

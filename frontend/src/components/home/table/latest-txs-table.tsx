@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
@@ -40,6 +41,8 @@ export default function LatestTxsTable() {
             <NavTextLink href={`/block/${element.height}`}>
               <FormattedNumber value={element.height} />
             </NavTextLink>
+          ) : element.abandoned ? (
+            <Badge variant="destructive">Abandoned</Badge>
           ) : (
             "--"
           )}
@@ -101,6 +104,8 @@ export default function LatestTxsTable() {
                         <NavTextLink href={`/block/${item.height}`}>
                           <FormattedNumber value={item.height} />
                         </NavTextLink>
+                      ) : item.abandoned ? (
+                        <Badge variant="destructive">Abandoned</Badge>
                       ) : (
                         "--"
                       )}
