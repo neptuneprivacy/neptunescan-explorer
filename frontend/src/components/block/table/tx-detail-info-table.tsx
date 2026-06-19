@@ -78,7 +78,7 @@ export default function TxDetailInfoTable() {
                     </NavTextLink>
                   </div>
                 ) : txDetail.abandoned ? (
-                  <Badge variant="destructive">Abandoned</Badge>
+                  <Badge variant="outline">Abandoned</Badge>
                 ) : (
                   <Badge variant="outline">Pending</Badge>
                 )
