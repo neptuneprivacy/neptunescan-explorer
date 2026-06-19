@@ -133,7 +133,7 @@ export default function UtxoDetailPage() {
                 label="Status"
                 value={
                   utxo.abandoned ? (
-                    <Badge variant="destructive">
+                    <Badge variant="outline">
                       Abandoned
                     </Badge>
                   ) : utxo.in_mempool ? (
