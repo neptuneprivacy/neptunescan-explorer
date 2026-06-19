@@ -41,8 +41,6 @@ export default function LatestTxsTable() {
             <NavTextLink href={`/block/${element.height}`}>
               <FormattedNumber value={element.height} />
             </NavTextLink>
-          ) : element.abandoned ? (
-            <Badge variant="destructive">Abandoned</Badge>
           ) : (
             "--"
           )}
@@ -104,8 +102,6 @@ export default function LatestTxsTable() {
                         <NavTextLink href={`/block/${item.height}`}>
                           <FormattedNumber value={item.height} />
                         </NavTextLink>
-                      ) : item.abandoned ? (
-                        <Badge variant="destructive">Abandoned</Badge>
                       ) : (
                         "--"
                       )}
