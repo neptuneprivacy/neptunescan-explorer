@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fetch"
 	"fmt"
@@ -218,9 +219,32 @@ func (m *MemPool) tryDeleteUnsucessfulTx(ctx context.Context, del MemPoolTransac
 		return
 	}
 
-	//if tx has been exists for more than 1 day, delete it
+	//if tx has been exists for more than 1 day, delete it with its unconfirmed inputs/outputs
 	if time.Since(del.Time) > time.Hour*24 {
-		timescale.GetPostgresGormTypedDB(ctx, &MemPoolTransaction{}).Where("id = ?", del.Id).Delete(&MemPoolTransaction{})
+		tx := timescale.NewTx(sql.LevelDefault)
+
+		if err := tx.GetTxTypedDB(ctx, &MemPoolTransaction{}).
+			Where("id = ?", del.Id).Delete(&MemPoolTransaction{}).Error; err != nil {
+			logger.Warn("failed to delete unsuccessful tx", "txid", del.Id, "err", err)
+			tx.Tx().Rollback()
+			return
+		}
+		if err := tx.GetTxTypedDB(ctx, &Inputs{}).
+			Where("txid = ? AND height = 0", del.Id).Delete(&Inputs{}).Error; err != nil {
+			logger.Warn("failed to delete inputs of unsuccessful tx", "txid", del.Id, "err", err)
+			tx.Tx().Rollback()
+			return
+		}
+		if err := tx.GetTxTypedDB(ctx, &Outputs{}).
+			Where("txid = ? AND height = 0", del.Id).Delete(&Outputs{}).Error; err != nil {
+			logger.Warn("failed to delete outputs of unsuccessful tx", "txid", del.Id, "err", err)
+			tx.Tx().Rollback()
+			return
+		}
+
+		if err := tx.Tx().Commit().Error; err != nil {
+			logger.Warn("failed to commit delete of unsuccessful tx", "txid", del.Id, "err", err)
+		}
 	}
 }
 
