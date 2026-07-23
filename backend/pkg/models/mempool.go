@@ -51,10 +51,10 @@ func (m *MemPool) WaitNextRound() {
 	time.Sleep(time.Second)
 }
 
-func (m *MemPool) fetchAndCompareTxs(ctx context.Context) (adds []MemPoolTransaction, deletes []MemPoolTransaction, err error) {
+func (m *MemPool) fetchAndCompareTxs(ctx context.Context) (adds, updates, deletes []MemPoolTransaction, err error) {
 	rpctxs, err := GetNeptuneClient().GetMempoolTransactions(ctx)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	var txs = make([]MemPoolTransaction, len(rpctxs))
@@ -73,17 +73,20 @@ func (m *MemPool) fetchAndCompareTxs(ctx context.Context) (adds []MemPoolTransac
 
 	if len(m.txs) == 0 {
 		m.txs = txs
-		return txs, nil, nil
+		return txs, nil, nil, nil
 	}
 
 	for i, newTx := range txs {
-		found := slices.ContainsFunc(m.txs, func(tx MemPoolTransaction) bool {
+		idx := slices.IndexFunc(m.txs, func(tx MemPoolTransaction) bool {
 			return tx.Id == newTx.Id
 		})
-		if !found {
+		if idx == -1 {
 			newTx.Time = time.Now()
 			txs[i].Time = newTx.Time
 			adds = append(adds, newTx)
+		} else if m.txs[idx].ProofType != newTx.ProofType {
+			// same txid but proof was upgraded (e.g. ProofCollection -> SingleProof)
+			updates = append(updates, newTx)
 		}
 	}
 
@@ -104,9 +107,16 @@ func (m *MemPool) fetchAndCompareTxs(ctx context.Context) (adds []MemPoolTransac
 // Execute implements fetch.LiveDataSource.
 func (m *MemPool) Execute(ctx context.Context) error {
 
-	adds, deletes, err := m.fetchAndCompareTxs(ctx)
+	adds, updates, deletes, err := m.fetchAndCompareTxs(ctx)
 	if err != nil {
 		return err
+	}
+
+	for _, tx := range updates {
+		if err := timescale.GetPostgresGormTypedDB(ctx, &MemPoolTransaction{}).
+			Where("id = ?", tx.Id).Update("proof_type", tx.ProofType).Error; err != nil {
+			return err
+		}
 	}
 
 	if len(adds) != 0 {
@@ -149,8 +159,8 @@ func (m *MemPool) Execute(ctx context.Context) error {
 		}
 	}
 
-	if len(adds)+len(deletes) != 0 {
-		err = m.publishMempoolEvents(ctx, adds, deletes)
+	if len(adds)+len(updates)+len(deletes) != 0 {
+		err = m.publishMempoolEvents(ctx, adds, updates, deletes)
 		if err != nil {
 			return err
 		}
@@ -248,7 +258,7 @@ func (m *MemPool) tryDeleteUnsucessfulTx(ctx context.Context, del MemPoolTransac
 	}
 }
 
-func (m *MemPool) publishMempoolEvents(ctx context.Context, adds, deletes []MemPoolTransaction) error {
+func (m *MemPool) publishMempoolEvents(ctx context.Context, adds, updates, deletes []MemPoolTransaction) error {
 
 	var deleteIds []string
 	for _, tx := range deletes {
@@ -257,6 +267,7 @@ func (m *MemPool) publishMempoolEvents(ctx context.Context, adds, deletes []MemP
 
 	data, _ := json.Marshal(map[string]any{
 		"adds":    adds,
+		"updates": updates,
 		"deletes": deleteIds,
 	})
 
