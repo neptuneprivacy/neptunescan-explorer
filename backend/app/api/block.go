@@ -153,7 +153,7 @@ func (s *Server) GetOrphaned(ctx context.Context, request GetOrphanedRequestObje
 func (s *Server) GetOverview(ctx context.Context, request GetOverviewRequestObject) (GetOverviewResponseObject, error) {
 
 	var block models.Block
-	err := timescale.GetPostgresGormTypedDB(ctx, &models.Block{}).Order("height desc").Limit(1).Take(&block).Error
+	err := timescale.GetPostgresGormTypedDB(ctx, &models.Block{}).Scopes(models.ScopeIsCanonical).Order("height desc").Limit(1).Take(&block).Error
 	if err != nil {
 		return nil, fmt.Errorf("get latest block: %w", err)
 	}
